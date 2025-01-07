@@ -1,14 +1,4 @@
-//.exe files
 *.exe
-
-
-//tempcoderunner files
 tempCodeRunnerFile.c 
 tempCodeRunnerFile.cpp
-
-//.vscode
 *.vscode
-
-
-test.c
-test.cpp
