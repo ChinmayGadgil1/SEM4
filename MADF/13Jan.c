@@ -7,15 +7,18 @@ int arr[MAX], n;
 void MinMax(int i,int j, int *min, int *max){
     if(i==j){
         *max=*min=arr[i];
+        printf("\n%3d  %3d  %3d  %3d",i+1,j+1,*min,*max);
     }
     else if(i==j-1){
         if(arr[i]>arr[j]){
             *max=arr[i];
             *min=arr[j];
+            printf("\n%3d  %3d  %3d  %3d",i+1,j+1,*min,*max);
         }
         else{
             *max=arr[j];
             *min=arr[i];
+            printf("\n%3d  %3d  %3d  %3d",i+1,j+1,*min,*max);
         }
     }
     else{
@@ -29,7 +32,9 @@ void MinMax(int i,int j, int *min, int *max){
         if(*max<max1){
             *max=max1;
         }
+        printf("\n%3d  %3d  %3d  %3d",i+1,j+1,*min,*max);
     }
+    
 }
 
 int main(){
@@ -43,8 +48,9 @@ for (int  i = 0; i < n; i++)
 }
 
 int min, max;
+printf("\n  i    j   min   max");
 MinMax(0,n-1,&min,&max);
-printf("Minimum: %d\nMaximum: %d\n",min,max);
+printf("\nMinimum: %d\nMaximum: %d\n",min,max);
 
 
 
