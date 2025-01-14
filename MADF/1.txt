@@ -1,1 +1,16 @@
 34 56 -19 26 58 38 30 -24 22 35 76
+
+void displayTut(int low, int high, int pivot, int i, int j) {
+    printf("Pivot: %d\n", pivot);
+    printf("Array: [ ");
+    for (int k = low; k <= high; k++) {
+        if (k == i) {
+            printf("(%d) ", arr[k]);
+        } else if (k == j) {
+            printf("[%d] ", arr[k]);
+        } else {
+            printf("%d ", arr[k]);
+        }
+    }
+    printf("]\n");
+}
