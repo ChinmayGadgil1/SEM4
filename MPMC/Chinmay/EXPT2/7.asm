@@ -22,8 +22,9 @@ _start:
     mov eax, 3
     mov ebx, 0
     mov ecx, num
-    mov edx, 10
+    mov edx, 9
     int 0x80
+    mov byte [num + eax], 0
 
     mov eax, 4
     mov ebx, 1
@@ -34,8 +35,9 @@ _start:
     mov eax, 3
     mov ebx, 0
     mov ecx, str
-    mov edx, 100
+    mov edx, 99
     int 0x80
+    mov byte [str + eax], 0
 
     mov eax, 4
     mov ebx, 1
