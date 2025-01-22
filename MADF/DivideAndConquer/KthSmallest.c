@@ -20,7 +20,8 @@ int partition(int arr[],int low, int high) {
             j--;
         } while (arr[j] > pivot);
 
-        printf("i=%d j=%d pivot=%d\n", i + 1, j + 1, pivot);
+        printf("\n%3d  %3d  ", i + 1, j + 1);
+    
         if (i < j) {
             interchange(arr,i,j);
         }
@@ -28,7 +29,8 @@ int partition(int arr[],int low, int high) {
     int temp = arr[low];
     arr[low] = arr[j];
     arr[j] = temp;
-    printf("i=%d j=%d pivot=%d\n", i + 1, j + 1, pivot);
+        printf("\n%3d  %3d  ", i + 1, j + 1);
+
     return j;
 }
 
@@ -82,11 +84,13 @@ int main(){
 
                 if (k > 0 && k <= n) {
                     start = clock();
+                    printf("\n  i    j");
+
                     int result = KthSmallest(arr, n, k);
                     
                     end = clock();
                     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-                    printf("The %dth smallest element is %d\n", k, result);
+                    printf("\nThe %dth smallest element is %d\n", k, result);
                     printf("Time taken to find the %dth smallest element: %f seconds\n", k, cpu_time_used);
                 } else {
                     printf("Invalid value of k\n");

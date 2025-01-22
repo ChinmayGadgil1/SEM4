@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <limits.h>
 #include <math.h>
+#include<time.h>
+
 #define MAX 1000
 
 int arr[MAX], n;
@@ -183,6 +185,8 @@ void display()
 
 int main()
 {
+    double cpu_time_used;
+     clock_t start, end;
 
     int choice;
     do
@@ -216,8 +220,12 @@ int main()
             {
                 int min, max;
                 printf("\n  i    j   min   max");
+                start=clock();
                 MinMax(0, n - 1, &min, &max);
+                end=clock();
+                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
                 printf("\nMinimum: %d\nMaximum: %d\n", min, max);
+                printf("Time taken to find the min and max element: %f seconds\n", cpu_time_used);
                 display();
             }
             break;

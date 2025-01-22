@@ -1,87 +1,204 @@
-SECTION .bss
-    num: resb 10
-    str: resb 100
+"use client";
+import React, { useState } from 'react';
+import { 
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle 
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { 
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
+import {
+  Search,
+  TrendingUp,
+  Target,
+  FileText,
+} from 'lucide-react';
 
-SECTION .data
-    prompt_num db "Enter a number: "
-    prompt_num_len equ $ - prompt_num
-    prompt_str db "Enter a string: "
-    prompt_str_len equ $ - prompt_str
-    output_num db "You entered the number: "
-    output_num_len equ $ - output_num
-    output_str db "You entered the string: "
-    output_str_len equ $ - output_str
-    newline db 10
+import { FaYoutube,FaReddit,FaQuora } from 'react-icons/fa';
 
-SECTION .text
-    global _start
+const ARTFinderDashboard = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [brandGuidelines, setBrandGuidelines] = useState('');
+  
+  // Sample data - replace with real data
+  const sentimentData = [
+    { name: 'Positive', value: 65 },
+    { name: 'Neutral', value: 20 },
+    { name: 'Negative', value: 15 }
+  ];
 
-_start:
-    ; Print prompt_num
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, prompt_num     
-    mov edx, prompt_num_len 
-    int 0x80                
+  const painPoints = [
+    { issue: 'Time Management', frequency: 78 },
+    { issue: 'Cost Concerns', frequency: 65 },
+    { issue: 'Technical Difficulty', frequency: 45 },
+    { issue: 'Integration Problems', frequency: 32 }
+  ];
 
-    ; Read input for num
-    mov eax, 3              
-    mov ebx, 0              
-    mov ecx, num            
-    mov edx, 9              
-    int 0x80                
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">ART Finder Dashboard</h1>
+        <p className="text-white">Automated Research and Trigger Finder</p>
+      </div>
 
-    ; Print prompt_str
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, prompt_str     
-    mov edx, prompt_str_len 
-    int 0x80                
+      {/* Search Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="space-y-4">
+          <Input
+            placeholder="Enter research topic..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-gray-800 border-gray-700"
+          />
+          <Input
+            placeholder="Enter brand guidelines..."
+            value={brandGuidelines}
+            onChange={(e) => setBrandGuidelines(e.target.value)}
+            className="bg-gray-800 border-gray-700"
+          />
+        </div>
+        <div className="flex items-end">
+          <Button className="w-full md:w-auto bg-blue-600 hover:bg-blue-700">
+            <Search className="mr-2 h-4 w-4" />
+            Start Research
+          </Button>
+        </div>
+      </div>
 
-    ; Read input for str
-    mov eax, 3              
-    mov ebx, 0              
-    mov ecx, str            
-    mov edx, 99             
-    int 0x80                
-    push eax                
+      {/* Main Content */}
+      <Tabs defaultValue="insights" className="space-y-4">
+        <TabsList className="bg-gray-800">
+          <TabsTrigger value="insights" className="data-[state=active]:bg-gray-200">
+            <TrendingUp className="mr-2 h-4 w-4" />
+            Insights
+          </TabsTrigger>
+          <TabsTrigger value="competitors" className="data-[state=active]:bg-gray-200">
+            <Target className="mr-2 h-4 w-4" />
+            Competitors
+          </TabsTrigger>
+          <TabsTrigger value="content" className="data-[state=active]:bg-gray-200">
+            <FileText className="mr-2 h-4 w-4" />
+            Content
+          </TabsTrigger>
+        </TabsList>
 
-    ; Print output_num
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, output_num     
-    mov edx, output_num_len 
-    int 0x80                
+        <TabsContent value="insights" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Sentiment Analysis Card */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className='text-gray-50 font-extrabold'>Sentiment Analysis</CardTitle>
+                <CardDescription className="text-white">Overall user sentiment</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={sentimentData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis dataKey="name" stroke="#9CA3AF" />
+                      <YAxis stroke="#9CA3AF" />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
+                        labelStyle={{ color: '#F9FAFB' }}
+                      />
+                      <Bar dataKey="value" fill="#3B82F6" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
 
-    ; Print num
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, num            
-    mov edx, 9              
-    int 0x80                
+            {/* Pain Points Card */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className='text-gray-50 font-extrabold'>Top Pain Points</CardTitle>
+                <CardDescription className="text-white">User-reported issues</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 text-gray-100">
+                  {painPoints.map((point, index) => (
+                    <div key={index}>
+                      <div className="flex justify-between mb-1">
+                      <span className="text-sm">{point.issue}</span>
+                      <span className="text-sm text-white">{point.frequency}%</span>
+                      </div>
+                      <Progress value={point.frequency} className="h-2 border border-violet-500" />
+                      
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-    ; Print output_str
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, output_str     
-    mov edx, output_str_len 
-    int 0x80                
+            {/* Source Distribution Card */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className='text-gray-50 font-extrabold'>Data Sources</CardTitle>
+                <CardDescription className="text-white">Content distribution</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center ">
+                      <FaYoutube className="mr-2 h-4 w-4 text-[#FF0000]" />
+                      <span className='text-white'>YouTube</span>
+                    </div>
+                    <span className='text-white'>45%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <FaReddit className="mr-2 h-4 w-4 text-[#FF5700]" />
+                      <span className='text-white'>Reddit</span>
+                    </div>
+                    <span  className='text-white'>30%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <FaQuora className="mr-2 h-4 w-4 text-[#a62100]" />
+                      <span className='text-white'>Quora</span>
+                    </div>
+                    <span  className='text-white'>25%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
-    ; Print str
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, str            
-    pop edx                 
-    int 0x80                
+        <TabsContent value="competitors" className="space-y-4">
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className='text-gray-50 font-extrabold'>Competitor Analysis</CardTitle>
+              <CardDescription className="text-white">Coming soon...</CardDescription>
+            </CardHeader>
+          </Card>
+        </TabsContent>
 
-    ; Print final newline
-    mov eax, 4              
-    mov ebx, 1              
-    mov ecx, newline        
-    mov edx, 1              
-    int 0x80                
+        <TabsContent value="content" className="space-y-4">
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className='text-gray-50 font-extrabold'>Content Analysis</CardTitle>
+              <CardDescription className="text-white">Coming soon...</CardDescription>
+            </CardHeader>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
 
-    ; Exit program
-    mov eax, 1              
-    mov ebx, 0              
-    int 0x80
+export default ARTFinderDashboard;
