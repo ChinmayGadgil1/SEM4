@@ -1,23 +1,22 @@
-SECTION .DATA
-stars db '*', 10   
-starslen equ $ - stars  
-
-SECTION .TEXT
-GLOBAL _start
-
+section .data
+    stars times 9 db '*'    
+    newline db 10
+section .text
+    global _start
 _start:
-    mov ecx, 9         ; 
+    mov eax, 4    
+    mov ebx, 1    
+    mov ecx, stars
+    mov edx, 9
+    int 0x80
 
-print_loop:
-    mov eax, 4         
-    mov ebx, 1         
-    mov edx, starslen  
-    mov esi, stars    
-    int 80h            
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 0x80
 
-    dec ecx            
-    jnz print_loop     
 
-    mov eax, 1         
-    xor ebx, ebx       
-    int 80h            
+    mov eax, 1              
+    xor ebx, ebx            
+    int 0x80

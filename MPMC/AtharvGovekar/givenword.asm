@@ -1,19 +1,32 @@
-SECTION .DATA
-word db 'Assembly', 10
-wordlen equ $ - word
+section .data
+    LF          EQU     10      
+    NULL        EQU     0       
+    SYS_WRITE   EQU     4       
+    SYS_EXIT    EQU     1       
+    STDOUT      EQU     1       
 
-SECTION .TEXT
-GLOBAL _start
+    msg1        db      'Hello, Assembly!', LF, NULL
+    msg1_len    EQU     $ - msg1 - 1    
+    
+    msg2        db      'Using EQU directive', LF, NULL
+    msg2_len    EQU     $ - msg2 - 1    
+
+section .text
+    global _start
 
 _start:
-    ; Print the word
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, word
-    mov edx, wordlen
-    int 80h
+    mov eax, SYS_WRITE      
+    mov ebx, STDOUT         
+    mov ecx, msg1          
+    mov edx, msg1_len      
+    int 0x80
 
-    ; Exit the program
-    mov eax, 1
-    xor ebx, ebx
-    int 80h
+    mov eax, SYS_WRITE     
+    mov ebx, STDOUT        
+    mov ecx, msg2         
+    mov edx, msg2_len     
+    int 0x80
+
+    mov eax, SYS_EXIT      
+    xor ebx, ebx          
+    int 0x80
