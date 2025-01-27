@@ -5,9 +5,6 @@
 
 #define infinity INT_MAX
 #define MAX 20
-#define initial 1
-#define waiting 2
-#define visited 3
 
 int state[MAX];
 int n;
