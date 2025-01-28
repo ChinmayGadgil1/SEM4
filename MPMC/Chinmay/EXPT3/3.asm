@@ -1,179 +1,137 @@
 section .data
-    msg1 db "Enter length: ", 0
-    msg2 db "Enter width: ", 0
-    msg3 db "Rectangle area: ", 0
-    msg4 db "Rectangle perimeter: ", 0
-    newline db 10, 0
+msg db ' ',10
+msgLen equ $-msg
+msg1 db 'Length: '
+msg1Len equ $-msg1
+msg2 db 'Breadth: '
+msg2Len equ $-msg2
+msg3 db 'Area of rectangle: '
+msg3Len equ $-msg3
+msg4 db 'Perimeter of rectangle: '
+msg4Len equ $-msg4
+msg5 db 'Height of trianle: '
+msg5Len equ $-msg5
+msg6 db 'Base of triangle: '
+msg6Len equ $-msg6
+msg7 db 'Area of triangle: '
+msg7Len equ $-msg7
+msg8 db 'Perimeter of triangle: '
+msg8Len equ $-msg8
+msg9 db 'side1: '
+msg9Len equ $-msg9
+msg10 db 'side2: '
+msg10Len equ $-msg10
+
+%macro writesystem 2
+mov eax,4
+mov ebx,1
+mov ecx, %1
+mov edx, %2
+int 80h
+%endmacro
+%macro readsystem 2
+mov eax,3
+mov ebx,2
+mov ecx,%1
+mov edx,%2
+int 80h
+%endmacro
+
+%macro AreaRect 2
+mov eax, [length]
+sub eax, '0'
+mov ebx, [breadth]
+sub ebx, '0'
+mul ebx
+add eax, '0'
+mov [areaRect], eax
+%endmacro
+
+%macro PeriRect 2
+mov eax, [length]
+sub eax, '0'
+mov ebx, [breadth]
+sub ebx, '0'
+add eax,ebx
+add eax,eax
+add eax, '0'
+mov [periRect], eax
+%endmacro
+
+%macro AreaTri 2
+mov al, [height]
+sub al, '0'
+mov bl, [base]
+sub bl, '0'
+mul bl
+mov bl,0x2
+div bl
+add al, '0'
+mov [areaTri], al
+%endmacro
+
+%macro PeriTri 3
+mov eax, [side1]
+sub eax, '0'
+mov ebx, [side2]
+sub ebx, '0'
+add eax,ebx
+mov ebx,[base]
+sub ebx, '0'
+add eax,ebx
+add eax, '0'
+mov [periTri], eax
+%endmacro
+
 
 section .bss
-    length resd 1
-    width resd 1
-    area resd 1
-    perimeter resd 1
-    input resb 16
+length RESB 8
+breadth RESB 8
+areaRect RESB 8
+periRect RESB 8
+areaTri RESB 8
+periTri RESB 8
+height RESB 8
+base RESB 8
+side1 RESB 8
+side2 RESB 8
 
 section .text
-    global _start
-
+global _start
 _start:
-    ; Prompt user for length
-    mov eax, 4         ; sys_write
-    mov ebx, 1         ; file descriptor: stdout
-    mov ecx, msg1      ; message address
-    mov edx, 14        ; message length
-    int 0x80
 
-    ; Read length
-    mov eax, 3         ; sys_read
-    mov ebx, 0         ; file descriptor: stdin
-    mov ecx, input     ; buffer
-    mov edx, 16        ; buffer size
-    int 0x80
+writesystem msg1,msg1Len
+readsystem length,8
+writesystem msg2,msg2Len
+readsystem breadth,8
+AreaRect length,breadth
+writesystem msg3,msg3Len
+writesystem areaRect,1
+writesystem msg, msgLen
+PeriRect length,breadth
+writesystem msg4,msg4Len
+writesystem periRect,1
+writesystem msg, msgLen
 
-    ; Convert length from ASCII to integer
-    mov eax, 0
-    mov ebx, input
-    call atoi
-    mov [length], eax
 
-    ; Prompt user for width
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, msg2
-    mov edx, 13
-    int 0x80
 
-    ; Read width
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, input
-    mov edx, 16
-    int 0x80
+writesystem msg5,msg5Len
+readsystem height,8
+writesystem msg6,msg6Len
+readsystem base,8
+writesystem msg9,msg9Len
+readsystem side1,8
+writesystem msg10,msg10Len
+readsystem side2,8
+AreaTri height,base
+writesystem msg7,msg7Len
+writesystem areaTri,1
+writesystem msg, msgLen
+PeriTri side1,side2,base
+writesystem msg8,msg8Len
+writesystem periTri,1
+writesystem msg, msgLen
 
-    ; Convert width from ASCII to integer
-    mov eax, 0
-    mov ebx, input
-    call atoi
-    mov [width], eax
-
-    ; area = length * width
-    mov eax, [length]
-    mul dword [width]
-    mov [area], eax
-
-    ; perimeter = 2 * (length + width)
-    mov eax, [length]
-    add eax, [width]
-    shl eax, 1
-    mov [perimeter], eax
-
-    ; Print area label
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, msg3
-    mov edx, 17
-    int 0x80
-
-    ; Print area
-    mov eax, [area]
-    call print_num
-
-    ; Print a newline
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 0x80
-
-    ; Print perimeter label
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, msg4
-    mov edx, 21
-    int 0x80
-
-    ; Print perimeter
-    mov eax, [perimeter]
-    call print_num
-
-    ; Print a newline
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 0x80
-
-    ; Exit
-    mov eax, 1
-    xor ebx, ebx
-    int 0x80
-
-;-----------------------------------------
-; atoi: Convert ASCII string to integer
-;       ebx points to the input buffer
-;       returns integer in eax
-;-----------------------------------------
-atoi:
-    push ebx
-    mov ecx, 0
-parse_loop:
-    movzx edx, byte [ebx]
-    cmp edx, 0
-    je done
-    cmp edx, '0'
-    jl done
-    cmp edx, '9'
-    jg done
-    sub edx, '0'
-    imul ecx, ecx, 10
-    add ecx, edx
-    inc ebx
-    jmp parse_loop
-done:
-    mov eax, ecx
-    pop ebx
-    ret
-
-;-----------------------------------------
-; print_num: Print integer in eax to stdout
-;-----------------------------------------
-print_num:
-    push eax       ; save original eax
-    push ecx
-    push edx
-    push esi
-
-    mov ecx, 0
-    mov edx, 0
-    push eax
-
-.divide_loop:
-    inc ecx
-    mov edx, 0
-    mov esi, 10
-    idiv esi       ; divide eax by 10
-    add edx, '0'   ; remainder -> ASCII code for digit
-    push edx
-    cmp eax, 0
-    jnz .divide_loop
-
-.print_loop:
-    dec ecx
-    mov eax, 4     ; sys_write
-    mov ebx, 1     ; stdout
-    mov edx, 1
-    pop esi
-    push ecx
-    mov [input], esi
-    mov ecx, input
-    int 0x80
-    pop ecx
-    cmp ecx, 0
-    jnz .print_loop
-
-    pop eax
-    pop esi
-    pop edx
-    pop ecx
-    pop eax
-    ret
+mov eax, 1
+mov ebx, 0
+int 80h 

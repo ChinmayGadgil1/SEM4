@@ -1,203 +1,107 @@
 section .data
-    prompt1 db 'Enter first number (1-9): '
-    prompt1_len equ $ - prompt1
-    prompt2 db 'Enter second number (1-9): '
-    prompt2_len equ $ - prompt2
-    
-    sum_msg db 'Sum: '
-    sum_len equ $ - sum_msg
-    diff_msg db 'Difference: '
-    diff_len equ $ - diff_msg
-    prod_msg db 'Product: '
-    prod_len equ $ - prod_msg
-    quot_msg db 'Quotient: '
-    quot_len equ $ - quot_msg
-    rem_msg db 'Remainder: '
-    rem_len equ $ - rem_msg
-    
-    newline db 10
+msg db ' ',10
+msgLen equ $-msg
+msg1 db 'Number 1: '
+msg1Len equ $-msg1
+msg2 db 'Number 2: '
+msg2Len equ $-msg2
+msg3 db 'Sum: '
+msg3Len equ $-msg3
+msg4 db 'Difference: '
+msg4Len equ $-msg4
+msg5 db 'Product: '
+msg5Len equ $-msg5
+msg6 db 'Quotient: '
+msg6Len equ $-msg6
+msg7 db 'Remainder: '
+msg7Len equ $-msg7
+%macro writesystem 2
+mov eax,4
+mov ebx,1
+mov ecx, %1
+mov edx, %2
+int 80h
+%endmacro
+%macro readsystem 2
+mov eax,3
+mov ebx,2
+mov ecx,%1
+mov edx,%2
+int 80h
+%endmacro
+%macro addition 2
+mov eax, [num1]
+sub eax, '0'
+mov ebx, [num2]
+sub ebx, '0'
+add eax, ebx
+add eax, '0'
+mov [sum], eax
+%endmacro
+%macro subtraction 2
+mov eax, [num1]
+sub eax, '0'
+mov ebx, [num2]
+sub ebx, '0'
+sub eax, ebx
+add eax, '0'
+mov [diff], eax
+%endmacro
+%macro multiplication 2
+mov eax, [num1]
+sub eax, '0'
+mov ebx, [num2]
+sub ebx, '0'
+mul ebx
+add eax, '0'
+mov [prod], eax
+%endmacro
+%macro division 2
+mov al, [num1]
+sub al, '0'
+mov bl, [num2]
+sub bl, '0'
+div bl
+add al, '0'
+mov [quot], al
+add ah, '0'
+mov [rem], ah
+%endmacro
 
 section .bss
-    num1 resb 2
-    num2 resb 2
-    result resb 2
-
+num1 RESB 5
+num2 RESB 5
+sum RESB 5
+diff RESB 5
+prod RESB 5
+quot RESB 5
+rem RESB 5
 section .text
-    global _start
-
+global _start
 _start:
-    ; Get first number
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, prompt1
-    mov edx, prompt1_len
-    int 80h
-    
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, num1
-    mov edx, 2
-    int 80h
-    
-    ; Get second number
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, prompt2
-    mov edx, prompt2_len
-    int 80h
-    
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, num2
-    mov edx, 2
-    int 80h
-
-    ; Convert ASCII to numbers
-    movzx eax, byte [num1]    ; Zero-extend to use full register
-    sub al, '0'
-    movzx ebx, byte [num2]    ; Zero-extend to use full register
-    sub bl, '0'
-    
-    ; Save original numbers
-    push eax
-    push ebx
-    
-    ; Addition
-    add al, bl
-    add al, '0'
-    mov [result], al
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, sum_msg
-    mov edx, sum_len
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, result
-    mov edx, 1
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 80h
-    
-    ; Restore numbers for subtraction
-    pop ebx
-    pop eax
-    push eax
-    push ebx
-    
-    ; Subtraction
-    sub al, bl
-    add al, '0'
-    mov [result], al
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, diff_msg
-    mov edx, diff_len
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, result
-    mov edx, 1
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 80h
-    
-    ; Restore numbers for multiplication
-    pop ebx
-    pop eax
-    push eax
-    push ebx
-    
-    ; Multiplication
-    mul bl              ; Result in AX
-    add al, '0'
-    mov [result], al
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, prod_msg
-    mov edx, prod_len
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, result
-    mov edx, 1
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 80h
-    
-    ; Restore numbers for division
-    pop ebx
-    pop eax
-    
-    ; Division
-    xor edx, edx        ; Clear EDX for division
-    div ebx             ; Quotient in EAX, remainder in EDX
-    push edx            ; Save remainder
-    
-    ; Handle quotient
-    add al, '0'
-    mov [result], al
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, quot_msg
-    mov edx, quot_len
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, result
-    mov edx, 1
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 80h
-    
-    ; Handle remainder
-    pop eax             ; Get back remainder
-    add al, '0'
-    mov [result], al
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, rem_msg
-    mov edx, rem_len
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, result
-    mov edx, 1
-    int 80h
-    
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 80h
-    
-    ; Exit program
-    mov eax, 1
-    mov ebx, 0
-    int 80h
+writesystem msg1,msg1Len
+readsystem num1,5
+writesystem msg2,msg2Len
+readsystem num2,5
+addition num1,num2
+writesystem msg3,msg3Len
+writesystem sum,1
+writesystem msg, msgLen
+subtraction num1,num2
+writesystem msg4,msg4Len
+writesystem diff,1
+writesystem msg, msgLen
+multiplication num1,num2
+writesystem msg5,msg5Len
+writesystem prod, 1
+writesystem msg, msgLen
+division num1,num2
+writesystem msg6,msg6Len
+writesystem quot, 1
+writesystem msg, msgLen
+writesystem msg7,msg7Len
+writesystem rem, 1
+writesystem msg, msgLen
+mov eax, 1
+mov ebx, 0
+int 80h 
