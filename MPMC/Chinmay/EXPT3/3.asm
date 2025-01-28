@@ -9,7 +9,7 @@ msg3 db 'Area of rectangle: '
 msg3Len equ $-msg3
 msg4 db 'Perimeter of rectangle: '
 msg4Len equ $-msg4
-msg5 db 'Height of trianle: '
+msg5 db 'Height of triangle: '
 msg5Len equ $-msg5
 msg6 db 'Base of triangle: '
 msg6Len equ $-msg6
