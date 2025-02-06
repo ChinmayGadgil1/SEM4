@@ -1,9 +1,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
+#include<time.h>
+#include<stdint.h>
+
+static inline uint64_t rdtsc() {
+    unsigned int lo, hi;
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    return ((uint64_t)hi << 32) | lo;
+}
+
 int binarySearch(char *arr[], int low, int high, char *x) {
-    if (low == high) {
+    if (low >= high) {
         printf(" %02d      %02d\n", low, high);
         if (strcmp(arr[low], x) == 0)
             return low;
@@ -62,18 +70,23 @@ int main() {
                 } else {
                     printf("Enter string to search: ");
                     scanf("%s", x);
-                    clock_t start, end;
-                    double cpu_time_used;
+                    
                     printf("\nLow Mid High\n");
-                    start = clock();
+                    uint64_t start_cycles, end_cycles;
+                    struct timespec start_time, end_time;
+                    double elapsed_ns, cycles_per_ns;
+                    
+                    start_cycles = rdtsc();
                     int result = binarySearch(arr, 0, n - 1, x);
-                    end = clock();
-                    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+                    end_cycles = rdtsc(); 
+                    
                     if (result != -1)
                         printf("String found at index %d\n", result + 1);
                     else
                         printf("String not found\n");
-                    printf("Time taken for binary search: %f seconds\n\n", cpu_time_used);
+                    printf("Time taken for binary search: %lu seconds\n\n", (end_cycles
+                    -start_cycles)/CLOCKS_PER_SEC);
+                
                 }
                 break;
 
