@@ -3,8 +3,6 @@ msg1 db 'Enter the elements of the array:', 10
 msg1len equ $-msg1
 msg2 db 'Enter the number of elements in the array: '
 msg2len equ $-msg2
-msg3 db 'The sum is:'
-msg3len equ $-msg3
 newline db ' ',10
 newlinelen equ $-newline
 tab db ' '
@@ -15,7 +13,7 @@ section .bss
 num resb 9
 element resb 9
 i resb 9
-sum resb 9
+x resb 9
 
 %macro writesystem 2
 mov eax,4
@@ -56,16 +54,14 @@ mov eax,'0'
 mov [sum],eax
 mov esi, array
 mov eax,i
-SUM:
+LinearSearch:
 mov eax,[esi]
 mov [element],eax
 mov al,[element]
 sub al,'0'
-mov bl,[sum]
+mov bl,[x]
 sub bl,'0'
-add al,bl
-add al,'0'
-mov [sum],al
+sum],al
 dec byte[i]
 inc esi
 cmp byte[i],'0'
