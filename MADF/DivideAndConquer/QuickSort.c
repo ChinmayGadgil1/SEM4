@@ -83,9 +83,11 @@ int partition(int low, int high) {
         
         if (i < j) {
             interchange(arr,i,j);
+            printf("\ni=%3d  j=%3d (interchange)\n", i + 1, j + 1);
         }
     } while (i < j);
     
+    printf("\ni=%3d  j=%3d (after partition)\n", i + 1, j + 1);
     arr[low] = arr[j];
     arr[j] = pivot;
     return j;
@@ -100,7 +102,6 @@ void quicksort(int low, int high) {
         insert(pivloc + 1);   
         insert(high);         
         
-        printf("After partition at index %d:\n", pivloc);
         display();
         
         quicksort(low, pivloc - 1);
@@ -135,6 +136,7 @@ void sortArray() {
     printf("Initial array:\n");
     displayArray();
     printf("\n");
+    
     
     start = clock();
     quicksort(0, n - 1);
