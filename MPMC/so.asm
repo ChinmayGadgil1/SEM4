@@ -84,7 +84,6 @@ mov bh,[esi] ; Load value at source index
 mov dh,[edi] ; Load value at destination index
 cmp bh,dh ; Compare values
 jge update2 ; If value at source index >= value at destination index, go to
-update2
 mov edi,arr ; Update destination index
 add edi,ecx ; Add inner loop counter to base address of array
 update2:
