@@ -1,21 +1,22 @@
+
 section .data
-    msg1 db 'Enter first number: '
-    msg1Len equ $-msg1
-    msg2 db 'Enter second number: '
-    msg2Len equ $-msg2
-    resultMsg db 'Larger number is: '
-    resultMsgLen equ $-resultMsg
-    newline db 10
-    
+    msg1 db 'Enter the first number: ', 0
+    msg1len equ $-msg1
+    msg2 db 'Enter the second number: ', 0
+    msg2len equ $-msg2
+    msg3 db 'The larger number is: ', 0
+    msg3len equ $-msg3
+    msg4 db 'The numbers are equal.', 0
+    msg4len equ $-msg4
+    newline db 10, 0
+    newlinelen equ $-newline
+
 section .bss
-    num1 resb 2
-    num2 resb 2
-    larger resb 2
+    num1 resb 4
+    num2 resb 4
+    result resb 4
 
-section .text
-    global _start
-
-%macro print 2
+%macro writesystem 2
     mov eax, 4
     mov ebx, 1
     mov ecx, %1
@@ -23,7 +24,7 @@ section .text
     int 80h
 %endmacro
 
-%macro read 2
+%macro readsystem 2
     mov eax, 3
     mov ebx, 0
     mov ecx, %1
@@ -31,37 +32,44 @@ section .text
     int 80h
 %endmacro
 
+section .text
+global _start
+
 _start:
-    print msg1, msg1Len
-    
-    read num1, 2
-    
-    print msg2, msg2Len
-    
-    read num2, 2
-    
-    mov al, [num1]
-    sub al, '0'
-    mov bl, [num2]
-    sub bl, '0'
-    
-    cmp al, bl
-    jg first_larger
-    mov al, bl
-    jmp print_result
-    
-first_larger:
-    
-print_result:
-    add al, '0'
-    mov [larger], al
-    
-    print resultMsg, resultMsgLen
-    
-    print larger, 1
-    
-    print newline, 1
-    
+   
+    writesystem msg1, msg1len
+    readsystem num1, 4
+    writesystem msg2, msg2len
+    readsystem num2, 4
+
+    mov eax, [num1]
+    mov ebx, [num2]
+    cmp eax, ebx
+    je numbers_are_equal
+    jge first_is_larger
+
+    mov eax, ebx
+    jmp display_result
+
+first_is_larger:
+    mov eax, [num1]
+    jmp store_result
+
+numbers_are_equal:
+    writesystem msg4, msg4len
+    writesystem newline, newlinelen
     mov eax, 1
-    mov ebx, 0
+    xor ebx, ebx
+    int 80h
+
+store_result:
+    mov [result], eax
+
+display_result:
+    writesystem msg3, msg3len
+    writesystem result, 4
+    writesystem newline, newlinelen
+
+    mov eax, 1
+    xor ebx, ebx
     int 80h
