@@ -1,9 +1,14 @@
 section .data
     msg1 db "Enter first string: ", 0
     msg2 db "Enter second string: ", 0
-    equal_msg db "Strings are equal", 0xa
-    not_equal_msg db "Strings are not equal", 0xa
-
+    equal_msg db "Strings are equal", 10
+    not_equal_msg db "Strings are not equal", 10
+    
+     msg1l equ $-msg1
+    msg2l equ $-msg2
+    not_equal_msgl equ $-not_equal_msg
+    equal_msgl equ $-equal_msg
+   
 %macro print 2
     mov eax, 4
     mov ebx, 1
@@ -34,10 +39,10 @@ section .text
     global _start
 
 _start:
-    print msg1, 19
+    print msg1,msg1l
     input str1, 50
     
-    print msg2, 19
+    print msg2, msg2l
     input str2, 50
 
 compare_strings:
@@ -60,11 +65,11 @@ compare_loop:
     loop compare_loop
 
 equal:
-    print equal_msg, 16
+    print equal_msg, equal_msgl
     jmp exit_prog
 
 not_equal:
-    print not_equal_msg, 20
+    print not_equal_msg, not_equal_msgl
     
 exit_prog:
     exit

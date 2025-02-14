@@ -1,9 +1,16 @@
 section .data
     msg1 db "Enter first number: ", 0
     msg2 db "Enter second number: ", 0
-    greater db "First number is greater", 0xa
-    lesser db "Second number is greater", 0xa
-    equal db "Both numbers are equal", 0xa
+    greater db "First number is greater", 10
+    lesser db "Second number is greater", 10
+    equal db "Both numbers are equal", 10
+    
+    msg1l equ $-msg1
+    msg1l equ $-msg1
+    greaterl equ $-greater
+    lesserl equ $-lesser
+    equall equ $-equal
+    
 
 %macro print 2
     mov eax, 4
@@ -35,10 +42,10 @@ section .text
     global _start
 
 _start:
-    print msg1, 19
+    print msg1,msg1l
     input num1, 2
     
-    print msg2, 20
+    print msg2,msg2l
     input num2, 2
     
     mov al, [num1]
@@ -52,15 +59,15 @@ _start:
     jl lesser_num
 
 equal_nums:
-    print equal, 17
+    print equal, equall
     jmp exit_prog
 
 greater_num:
-    print greater, 22
+    print greater, greaterl
     jmp exit_prog
 
 lesser_num:
-    print lesser, 21
+    print lesser, lesserl
     
 exit_prog:
     exit

@@ -2,10 +2,18 @@ section .data
     msg1 db "Enter first number: ", 0
     msg2 db "Enter second number: ", 0
     msg3 db "Enter third number: ", 0
-    msg_smallest db "First number is smallest", 0xa
-    msg_second db "Second number is smallest", 0xa
-    msg_third db "Third number is smallest", 0xa
-    msg_equal db "All numbers are equal", 0xa
+    msg_smallest db "First number is smallest", 10
+    msg_second db "Second number is smallest", 10
+    msg_third db "Third number is smallest", 10
+    msg_equal db "All numbers are equal", 10
+    
+      msg1l equ $-msg1
+    msg2l equ $-msg2
+    msg3l equ $-msg3
+    msg_smallestl equ $-msg_smallest
+    msg_secondl equ $-msg_second
+    msg_thirdl equ $-msg_third
+    msg_equall equ $-msg_equal
 
 %macro print 2
     mov eax, 4
@@ -38,13 +46,13 @@ section .text
     global _start
 
 _start:
-    print msg1, 19
+    print msg1,msg1l
     input num1, 2
     
-    print msg2, 20
+    print msg2,msg2l
     input num2, 2
     
-    print msg3, 19
+    print msg3,msg3l
     input num3, 2
     
     mov al, [num1]
@@ -59,7 +67,7 @@ _start:
     jne check_lesser
     cmp bl, cl
     jne check_lesser
-    print msg_equal, 19
+    print msg_equal,msg_equall
     jmp exit_prog
 
 check_lesser:
@@ -68,28 +76,28 @@ check_lesser:
     jg check_second
     cmp al, cl
     jg check_third
-    print msg_smallest, 23
+    print msg_smallest,msg_smallestl
     jmp exit_prog
 
 check_second:
     
     cmp bl, cl
     jg third_smallest
-    print msg_second, 24
+    print msg_second,msg_secondl
     jmp exit_prog
 
 check_third:
     cmp cl, bl
     jg second_smallest
-    print msg_third, 23
+    print msg_third,msg_thirdl
     jmp exit_prog
 
 second_smallest:
-    print msg_second, 24
+    print msg_second,msg_secondl
     jmp exit_prog
 
 third_smallest:
-    print msg_third, 23
+    print msg_third,msg_thirdl
     
 exit_prog:
     exit
