@@ -1,38 +1,47 @@
 section .data
-msg db 'Multiples of three from 0 to 9:', 10
-msgLen equ $-msg
-newline db 10
-newlineLen equ $-newline
-
-%macro writesystem 2
-    push ecx               
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, %1
-    mov edx, %2
-    int 80h
-    pop ecx                
-%endmacro
-
-section .bss
-output resb 1
+    newline db 10
+    digit db 0
 
 section .text
 global _start
 _start:
-    writesystem msg, msgLen
+    mov ecx, 0
 
-    mov ecx, 0             
-print_multiple:
+print_loop:
+    push ecx
+
     mov eax, ecx
-    add eax, '0'           
-    mov [output], al       
-    writesystem output, 1 
-    writesystem newline, newlineLen 
-    add ecx, 3            
-    cmp ecx, 10           
-    jl print_multiple
+    mov edx, 0
+    mov ebx, 3
+    div ebx
+    
+    cmp edx, 0
+    jne next_num
 
-    mov eax, 1            
+    pop ecx
+    push ecx
+    add ecx, '0'
+    mov [digit], cl
+    
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, digit
+    mov edx, 1
+    int 80h
+    
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+
+next_num:
+    pop ecx
+    inc ecx
+    cmp ecx, 10
+    jl print_loop
+
+exit:
+    mov eax, 1
     mov ebx, 0
     int 80h

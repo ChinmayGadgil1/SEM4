@@ -1,38 +1,48 @@
 section .data
-msg db 'Odd numbers from 0 to 9:', 10
-msgLen equ $-msg
-newline db 10
-newlineLen equ $-newline
-
-%macro writesystem 2
-    push ecx               
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, %1
-    mov edx, %2
-    int 80h
-    pop ecx               
-%endmacro
+    newline db 10
 
 section .bss
-output resb 1
+    digit resb 1
 
 section .text
-global _start
+    global _start
+
 _start:
-    writesystem msg, msgLen
+    mov byte [digit], 0
 
-    mov ecx, 1             
-print_odd:
-    mov eax, ecx
-    add eax, '0'           
-    mov [output], al       
-    writesystem output, 1  
-    writesystem newline, newlineLen 
-    add ecx, 2             
-    cmp ecx, 10            
-    jl print_odd
+print_loop:
+    cmp byte [digit], 10
+    jge exit_program
 
-    mov eax, 1             
+    mov al, [digit]
+    mov ah, 0
+    mov bl, 2
+    div bl
+
+    cmp ah, 1
+    jne continue
+
+    mov al, [digit]
+    add al, '0'
+    mov [digit+1], al
+    
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, digit+1
+    mov edx, 1
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+
+continue:
+    inc byte [digit]
+    jmp print_loop
+
+exit_program:
+    mov eax, 1
     mov ebx, 0
     int 80h
