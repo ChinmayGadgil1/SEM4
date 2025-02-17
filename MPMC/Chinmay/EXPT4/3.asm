@@ -7,6 +7,8 @@ section .data
     msg3len equ $-msg3
     msg4 db 'The smallest number is: '
     msg4len equ $-msg4
+    equal_msg db 'All numbers are equal!'
+    equal_msglen equ $-equal_msg
     newline db 10
     newlinelen equ $-newline
 
@@ -42,36 +44,53 @@ _start:
     writesystem msg2, msg2len
     readsystem num2, 2
     
-    ; Get third number
     writesystem msg3, msg3len
     readsystem num3, 2
 
-    ; Initialize comparison
-    mov al, [num1]    ; Load first number
-    sub al, '0'       ; Convert to number
+    ; Check for equality
+    mov al, [num1]    
+    sub al, '0'       
     
-    mov bl, [num2]    ; Load second number
-    sub bl, '0'       ; Convert to number
+    mov bl, [num2]    
+    sub bl, '0'       
     
-    ; Compare first and second number
+    cmp al, bl       
+    jne find_smallest 
+    
+    mov cl, [num3]    
+    sub cl, '0'
+    
+    cmp al, cl        
+    jne find_smallest 
+    
+ 
+    writesystem equal_msg, equal_msglen
+    writesystem newline, newlinelen
+    jmp exit
+
+find_smallest:
+    mov al, [num1]    
+    sub al, '0'       
+    
+    mov bl, [num2]    
+    sub bl, '0'       
+    
     cmp al, bl
-    jle compare_third ; If first <= second, keep first
-    mov al, bl        ; If second < first, keep second
+    jle compare_third 
+    mov al, bl       
 
 compare_third:
-    mov bl, [num3]    ; Load third number
-    sub bl, '0'       ; Convert to number
+    mov bl, [num3]    
+    sub bl, '0'       
     
-    ; Compare smaller of first two with third
     cmp al, bl
-    jle print_result  ; If smaller <= third, keep smaller
-    mov al, bl        ; If third is smaller, keep third
+    jle print_result 
+    mov al, bl        
 
 print_result:
-    add al, '0'       ; Convert back to ASCII
-    mov [smallest], al ; Store result
+    add al, '0'       
+    mov [smallest], al 
 
-    ; Display result
     writesystem msg4, msg4len
     writesystem smallest, 1
     writesystem newline, newlinelen

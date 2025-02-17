@@ -34,21 +34,21 @@ section .text
 global _start
 
 _start:
-    ; Prompt for input
+  
     writesystem msg1, msg1len
     
-    ; Read input
+    
     readsystem num, 2
     
-    ; Convert ASCII to number
+ 
     mov al, [num]
     sub al, '0'
     
     ; Compare with 5
     cmp al, 5
-    je equal        ; Jump if equal to 5
-    jg greater      ; Jump if greater than 5
-    jl less         ; Jump if less than 5
+    je equal        
+    jg greater      
+    jl less        
 
 greater:
     writesystem msg_greater, msg_greater_len

@@ -5,8 +5,12 @@ section .data
     msg2len equ $-msg2
     msg3 db 'The larger number is: ', 0
     msg3len equ $-msg3
+    equal_msg db 'Numbers are equal!', 0
+    equal_msglen equ $-equal_msg
     newline db 10, 0
     newlinelen equ $-newline
+    
+
 
 section .bss
     num1 resb 4
@@ -42,24 +46,28 @@ _start:
     mov eax, [num1]
     mov ebx, [num2]
     cmp eax, ebx
-    jge first_is_larger
+    je numbers_equal   
+    jg first_is_larger 
+    
 
- 
     mov eax, ebx
     jmp display_result
+
+numbers_equal:
+    writesystem equal_msg, equal_msglen
+    writesystem newline, newlinelen
+    jmp exit_program
 
 first_is_larger:
     mov eax, [num1]
 
 display_result:
     mov [result], eax
-
-
     writesystem msg3, msg3len
     writesystem result, 4
     writesystem newline, newlinelen
 
- 
+exit_program:
     mov eax, 1
     xor ebx, ebx
     int 80h

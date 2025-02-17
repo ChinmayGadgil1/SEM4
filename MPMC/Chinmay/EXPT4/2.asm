@@ -1,4 +1,8 @@
 section .data
+   
+    
+
+    
     msg1 db 'Enter the first number: '
     msg1len equ $-msg1
     msg2 db 'Enter the second number: '
@@ -7,6 +11,8 @@ section .data
     msg3len equ $-msg3
     msg4 db 'The largest number is: '
     msg4len equ $-msg4
+    equal_msg db 'All numbers are equal!', 10
+    equal_msglen equ $-equal_msg
     newline db 10
     newlinelen equ $-newline
 
@@ -36,6 +42,7 @@ section .text
 global _start
 
 _start:
+
     writesystem msg1, msg1len
     readsystem num1, 2
     
@@ -45,34 +52,54 @@ _start:
     writesystem msg3, msg3len
     readsystem num3, 2
 
-    mov al, [num1]    ; Load first number
-    sub al, '0'       ; Convert to number
+    mov al, [num1]   
+    sub al, '0'       
     
-    mov bl, [num2]    ; Load second number
-    sub bl, '0'       ; Convert to number
+    mov bl, [num2]    
+    sub bl, '0'       
     
     cmp al, bl
-    jge compare_third ; If first >= second, keep first
-    mov al, bl        ; If second > first, keep second
+    jne compare_numbers   
+    
+    mov cl, [num3]
+    sub cl, '0'
+    
+    cmp al, cl
+    jne compare_numbers   
+    
+    writesystem equal_msg, equal_msglen
+    jmp exit
+
+compare_numbers:
+    mov al, [num1]   
+    sub al, '0'       
+    
+    mov bl, [num2]    
+    sub bl, '0'       
+    
+    cmp al, bl
+    jge compare_third 
+    mov al, bl        
 
 compare_third:
-    mov bl, [num3]    ; Load third number
-    sub bl, '0'       ; Convert to number
+    mov bl, [num3]    
+    sub bl, '0'      
     
     cmp al, bl
-    jge print_result  ; If larger >= third, keep larger
-    mov al, bl        ; If third is larger, keep third
+    jge print_result  
+    mov al, bl        
 
 print_result:
-    add al, '0'       ; Convert back to ASCII
-    mov [largest], al ; Store result
+    add al, '0'       
+    mov [largest], al
 
-    ; Display result
+
     writesystem msg4, msg4len
     writesystem largest, 1
     writesystem newline, newlinelen
 
 exit:
+
     mov eax, 1
     mov ebx, 0
     int 80h
