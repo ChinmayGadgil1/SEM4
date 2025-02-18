@@ -63,7 +63,7 @@ mov ebx, [num2]
 sub ebx, '0'
 mul ebx
 add eax, '0'
-mov [prod], eax
+mov [prod], al
 %endmacro
 
 %macro division 2
@@ -116,13 +116,17 @@ readsystem num2,5
     	subtract_numbers:
     		subtraction num1,num2
     		writesystem diff,5
+			jmp _start
     	multiply_numbers:
     		multiplication num1,num2
     		writesystem prod,5
+			jmp _start
     	divide_numbers:
 		division num1,num2
 		writesystem quot,5
+		writesystem nl,nll
 		writesystem rem,5
+		jmp _start
 exit_program:
 mov eax, 1
 mov ebx, 0

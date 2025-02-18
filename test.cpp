@@ -1,20 +1,19 @@
 #include <iostream>
 using namespace std;
 
-static int i = 5;  // Global static variable `i`
+int var = 0;  // Global variable
 
-class myClass {
-public:
-    myClass() { cout << ++i; }   // Constructor: Pre-increments `i` and prints it
-    ~myClass() { cout << i--; }  // Destructor: Prints `i` and then post-decrements it
-};
-
-void check(myClass c) {  
-    // Function that takes an object by value (causing copy constructor & destructor to be called)
+namespace name {
+    int var = 2;  // Variable inside the namespace 'name'
 }
 
 int main() {
-    myClass c1;  // Creates an object of `myClass`
-    check(c1);   // Passes the object to the function `check`
+    int var = 1;  // Local variable inside main()
+
+    {
+        using namespace name;  // Brings namespace 'name' into scope
+        cout << ::var << " " << var << " " << name::var;  // LINE-1
+    }
+
     return 0;
 }
