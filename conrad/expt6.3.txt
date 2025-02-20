@@ -1,0 +1,192 @@
+section .data
+    menu db "Select operation:", 0xA
+         db "1. Addition (+)", 0xA
+         db "2. Subtraction (-)", 0xA
+         db "3. Multiplication (*)", 0xA
+         db "4. Division (/)", 0xA
+         db "5. Exponent (^)", 0xA, 0
+    menu_len equ $ - menu
+
+    msg1 db "Enter first number: ", 0
+    msg1_len equ $ - msg1
+    msg2 db "Enter second number: ", 0
+    msg2_len equ $ - msg2
+    msg_op db "Enter operation number: ", 0
+    msg_op_len equ $ - msg_op
+    result_msg db "Result: ", 0
+    result_len equ $ - result_msg
+    newline db 0xA
+    space db " "
+
+section .bss
+    num1 resb 2
+    num2 resb 2
+    op resb 2
+    result resd 1
+    buffer resb 10  ; Buffer for ASCII conversion
+
+section .text
+    global _start
+
+_start:
+    ; Show menu
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, menu
+    mov edx, menu_len
+    int 0x80
+
+    ; Prompt for operation
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_op
+    mov edx, msg_op_len
+    int 0x80
+
+    ; Read operation
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, op
+    mov edx, 2
+    int 0x80
+
+    ; Prompt for first number
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg1
+    mov edx, msg1_len
+    int 0x80
+
+    ; Read first number
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num1
+    mov edx, 2
+    int 0x80
+
+    ; Prompt for second number
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg2
+    mov edx, msg2_len
+    int 0x80
+
+    ; Read second number
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num2
+    mov edx, 2
+    int 0x80
+
+    ; Convert ASCII to integer
+    movzx eax, byte [num1]
+    sub eax, '0'
+    movzx ebx, byte [num2]
+    sub ebx, '0'
+
+    ; Check operation
+    movzx ecx, byte [op]
+    sub ecx, '0'
+    cmp ecx, 1
+    je add_numbers
+    cmp ecx, 2
+    je subtract_numbers
+    cmp ecx, 3
+    je multiply_numbers
+    cmp ecx, 4
+    je divide_numbers
+    cmp ecx, 5
+    je exponent_numbers
+
+    ; Addition
+add_numbers:
+    add eax, ebx
+    mov dword [result], eax
+    jmp print_result
+
+    ; Subtraction
+subtract_numbers:
+    sub eax, ebx
+    mov dword [result], eax
+    jmp print_result
+
+    ; Multiplication
+multiply_numbers:
+    mul ebx
+    mov dword [result], eax
+    jmp print_result
+
+    ; Division
+divide_numbers:
+    cmp ebx, 0
+    je print_result  ; Avoid division by zero
+    mov edx, 0
+    div ebx
+    mov dword [result], eax
+    jmp print_result
+
+    ; Exponentiation (Power Function)
+exponent_numbers:
+    push ebx
+    call power
+    mov dword [result], eax
+    jmp print_result
+
+; ------------------------------
+; Exponentiation Procedure (eax = base, ebx = exponent)
+; ------------------------------
+power:
+    mov ecx, ebx   ; Exponent in ECX
+    mov eax, 1     ; Start with 1
+pow_loop:
+    test ecx, ecx  ; If exponent == 0, return
+    jz pow_done
+    mul dword [num1]  ; Multiply base each iteration
+    loop pow_loop
+pow_done:
+    ret
+
+; ------------------------------
+; Print Result
+; ------------------------------
+print_result:
+    ; Print result message
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, result_msg
+    mov edx, result_len
+    int 0x80
+
+    ; Convert integer to ASCII and print
+    mov eax, dword [result]
+    call int_to_ascii
+
+    ; Exit
+    mov eax, 1
+    mov ebx, 0
+    int 0x80
+
+; ------------------------------
+; Convert Integer to ASCII and Print
+; ------------------------------
+int_to_ascii:
+    mov ecx, 10
+    mov edi, buffer + 9
+    mov byte [edi], 0
+
+convert:
+    dec edi
+    mov edx, 0
+    div ecx
+    add dl, '0'
+    mov [edi], dl
+    test eax, eax
+    jnz convert
+
+    ; Print number
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, edi
+    mov edx, buffer + 10 - edi
+    int 0x80
+    ret
