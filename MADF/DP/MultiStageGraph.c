@@ -94,45 +94,58 @@ void Fgraph(int c[MAX][MAX],int k,int n,int p[]){
     printf("\nMincost=%d\n",cost[1]);
 }
 
-int selectVertexB(int c[MAX][MAX], int j,int bcost[MAX])
-{
-    int min = j;
-    int r;
-    for(r=j;r>=1;r--){
-        if(c[r][j]<inf && c[r][j]+bcost[r]<c[min][j]+bcost[min]){
-            min=r;
+int selectVertexB(int c[MAX][MAX], int j, int bcost[MAX]) {
+    int min_cost = inf;
+    int min_vertex = j;
+
+    for (int r = 1; r < j; r++) {
+        if (c[r][j] != inf && bcost[r] != inf) {
+            int total_cost = c[r][j] + bcost[r];
+            if (total_cost < min_cost) {
+                min_cost = total_cost;
+                min_vertex = r;
+            }
         }
     }
-    return min;
+    return min_vertex;
 }
-void Bgraph(int c[MAX][MAX],int k,int n,int p[]){
-    int bcost[MAX]={inf};
-    int d[MAX]={0};
-    int mincost=0;
-    bcost[1]=0;
-    float x=(float)k-(1/(k-1));
-    int stage=k-1;
-    for (int j = 2; j <=n-1; j++)     
-    {
-        int r=selectVertexB(c,j,bcost);
-        bcost[j]=c[r][j]+bcost[r];
-        printf("Cost=%02d  ",bcost[j]);
-        printf("r=%02d\n",r);
-        d[j]=r; 
+void Bgraph(int c[MAX][MAX], int k, int n, int p[]) {
+    int bcost[MAX];
+    int d[MAX];
+    float x=1;
+    int stage=1;
+    for (int i = 0; i < MAX; i++) {
+        
+        bcost[i] = inf;
+        d[i] = 0;
+        
     }
-    p[1]=1;
-    p[k]=n;
-    for (int j = k-1; j >=2; j--)
-    {
-        p[j]=d[p[j+1]];
+    bcost[1] = 0; 
+
+    for (int j = 2; j <= n; j++) {
+        x+=0.25;
+        stage=x;
+        int r = selectVertexB(c, j, bcost);
+        bcost[j] = c[r][j] + bcost[r];
+        d[j] = r;  
+        printf("Cost(%02d,%02d)=%02d  ",stage,j,bcost[j]);
+        printf("r(%02d,%02d)=%02d\n",stage,j,r);
     }
+    
+
+    p[1] = 1;      
+    p[k] = n;      
+    
+    for (int j = k - 1; j >= 2; j--) {
+        p[j] = d[p[j + 1]];
+    }
+    
     printf("Shortest path is: ");
-    printf("%d",p[1]);
-    for (int i = 2; i <= k; i++)
-    {
-        printf("->%d",p[i]);
+    printf("%d", p[1]);
+    for (int i = 2; i <= k; i++) {
+        printf("->%d", p[i]);
     }
-    printf("\nMincost=%d\n",bcost[n]);
+    printf("\nMincost=%d\n", bcost[n]);
 }
 
 int main()
