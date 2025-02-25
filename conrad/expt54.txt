@@ -1,0 +1,134 @@
+section .data
+    prompt1 db 'Enter first number: ', 0
+    prompt1_len equ $-prompt1
+
+    prompt2 db 'Enter second number: ', 0
+    prompt2_len equ $-prompt2
+
+    prompt_op db 'Enter operation (+, -, *, /): ', 0
+    prompt_op_len equ $-prompt_op
+
+    result_msg db 'Result: ', 0
+    result_msg_len equ $-result_msg
+
+    newline db 10
+    newline_len equ $-newline
+
+section .bss
+    num1 resb 10
+    num2 resb 10
+    operation resb 1
+    result resb 10
+
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro read 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .text
+    global _start
+
+_start:
+    ; Get first number
+    write prompt1, prompt1_len
+    read num1, 10
+
+    ; Get second number
+    write prompt2, prompt2_len
+    read num2, 10
+
+    ; Get operation
+    write prompt_op, prompt_op_len
+    read operation, 1
+
+    ; Convert first number from ASCII to integer
+    mov esi, num1
+    call atoi
+    mov ebx, eax  ; Store first number in EBX
+
+    ; Convert second number from ASCII to integer
+    mov esi, num2
+    call atoi
+    mov ecx, eax  ; Store second number in ECX
+
+    ; Perform operation
+    mov al, [operation]
+    cmp al, '+'
+    je addition
+    cmp al, '-'
+    je subtraction
+    cmp al, '*'
+    je multiplication
+    cmp al, '/'
+    je division
+
+addition:
+    add ebx, ecx
+    jmp display_result
+
+subtraction:
+    sub ebx, ecx
+    jmp display_result
+
+multiplication:
+    imul ebx, ecx
+    jmp display_result
+
+division:
+    xor edx, edx
+    idiv ecx
+    jmp display_result
+
+display_result:
+    write result_msg, result_msg_len
+    mov eax, ebx
+    call itoa
+    write result, 10
+    write newline, newline_len
+
+    ; Exit program
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+
+; Convert ASCII to Integer
+atoi:
+    xor eax, eax
+    xor edx, edx
+.next_digit:
+    movzx ecx, byte [esi]
+    cmp ecx, 10
+    je .done
+    sub ecx, '0'
+    imul eax, eax, 10
+    add eax, ecx
+    inc esi
+    jmp .next_digit
+.done:
+    ret
+
+; Convert Integer to ASCII
+itoa:
+    mov edi, result
+    mov ecx, 10
+.next_digit:
+    xor edx, edx
+    div ecx
+    add dl, '0'
+    mov [edi], dl
+    inc edi
+    test eax, eax
+    jnz .next_digit
+    mov [edi], 10
+    ret

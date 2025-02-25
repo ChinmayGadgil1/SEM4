@@ -1,0 +1,44 @@
+section .data
+    prompt db 'Enter a number: ', 0
+    prompt_len equ $-prompt
+    
+    newline db 10
+    newline_len equ $-newline
+
+section .bss
+    num resb 10   ; Buffer to store user input
+
+%macro write 2
+    mov eax, 4     ; syscall number for sys_write
+    mov ebx, 1     ; file descriptor (stdout)
+    mov ecx, %1    ; address of string
+    mov edx, %2    ; length of string
+    int 80h        ; syscall
+%endmacro
+
+%macro read 2
+    mov eax, 3     ; syscall number for sys_read
+    mov ebx, 0     ; file descriptor (stdin)
+    mov ecx, %1    ; address of buffer
+    mov edx, %2    ; number of bytes to read
+    int 80h        ; syscall
+%endmacro
+
+section .text
+    global _start
+
+_start:
+    ; Display prompt message
+    write prompt, prompt_len
+
+    ; Read number from user
+    read num, 10
+
+    ; Display the entered number
+    write num, 10
+    write newline, newline_len
+
+    ; Exit program
+    mov eax, 1     ; syscall number for sys_exit
+    xor ebx, ebx   ; exit status 0
+    int 80h        ; syscall

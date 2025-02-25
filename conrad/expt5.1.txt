@@ -1,0 +1,54 @@
+section .data
+    prompt1 db 'Enter first number: ', 0
+    prompt1_len equ $-prompt1
+    
+    prompt2 db 'Enter second number: ', 0
+    prompt2_len equ $-prompt2
+    
+    newline db 10
+    newline_len equ $-newline
+
+section .bss
+    num1 resb 10  ; Buffer for first number
+    num2 resb 10  ; Buffer for second number
+
+%macro write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+%macro read 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 80h
+%endmacro
+
+section .text
+    global _start
+
+_start:
+    ; Prompt for first number
+    write prompt1, prompt1_len
+    read num1, 10
+
+    ; Prompt for second number
+    write prompt2, prompt2_len
+    read num2, 10
+
+    ; Display first number
+    write num1, 10
+    write newline, newline_len
+
+    ; Display second number
+    write num2, 10
+    write newline, newline_len
+
+    ; Exit
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
