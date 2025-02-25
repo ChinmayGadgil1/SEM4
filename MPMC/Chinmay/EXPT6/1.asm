@@ -5,6 +5,9 @@ section .data
     msg_len equ $ - msg
     space db ' '
     newline db 10
+    invalid_msg db 'Invalid input'
+    invalid_msg_len equ $ - invalid_msg
+
 
 section .bss
     n resb 2
@@ -18,6 +21,8 @@ global _start
 _start:
     call write_prompt
     call read_n
+    cmp byte [n], '0'
+    jle invalid
     call write_msg
     mov byte [num1], '0'
     mov byte [num2], '1'
@@ -36,9 +41,23 @@ loop:
     dec ecx
     jnz loop
     call write_newline
+    end:
     mov eax, 1
     mov ebx, 0
     int 80h
+
+invalid:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, invalid_msg
+    mov edx, invalid_msg_len
+    int 80h
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 80h
+    jmp end
 
 write_prompt:
     mov eax, 4
