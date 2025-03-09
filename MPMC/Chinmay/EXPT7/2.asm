@@ -1,10 +1,12 @@
 section .data
     msg1 db 'Enter number: ', 0
     len1 equ $-msg1
-    msg2 db 'The addition of the two numbers is ', 0
+    msg2 db 'The subtraction of the two numbers is ', 0
     len2 equ $-msg2
     newline db 10
     l equ $-newline
+    minus db '-', 0
+    len_minus equ $-minus
 %macro readsystem 2
     mov eax, 3
     mov ebx, 0
@@ -22,7 +24,8 @@ section .data
 section .bss
     num1 resb 10
     num2 resb 10
-    sum resb 10
+    result resb 10
+    is_negative resb 8
 section .text
 global _start
 _start:
@@ -39,13 +42,30 @@ _start:
 
     mov esi, num2
     call atoi
-    add eax, ebx
+    mov ecx, eax
 
-    mov esi, sum
+    cmp ebx, ecx
+    jge no_swap
+    sub ecx, ebx
+    mov ebx, ecx
+    mov byte [is_negative], 1
+    jmp display_result
+
+no_swap:
+    sub ebx, ecx
+
+display_result:
+    mov esi, result
+    mov eax, ebx
     call itoa
 
     writesystem msg2, len2
-    writesystem sum, 10
+
+    cmp byte [is_negative], 1
+    jne not_negative
+    writesystem minus, len_minus
+    not_negative:
+    writesystem result, 10
     writesystem newline, l
 
     mov eax, 1
