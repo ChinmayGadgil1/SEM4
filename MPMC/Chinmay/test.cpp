@@ -2,21 +2,31 @@
 using namespace std;
 
 class B {
-    int x;
+    int a;
 public:
-    B(int _x) : x(_x) { }   // Constructor initializes x
-    int fun() { return x; } // Returns x
+    B(int x) : a(x) {}
+    int get() { return a; }
+    void set(int x) { a = x + 1; }
 };
 
 class D : public B {
-    int y;
+    int b;
 public:
-    D(int _x, int _y) : B(_y),y(_x){}  // LINE-1
-    void fun() { cout << B::fun() << y; }  // Calls fun() from B, then prints y
+    D(int x, int y) : B(x), b(y) {}
+
+    void change(int c) {
+        static_cast<B&>(*this).set(c); // Accessing base class function
+        b = c + 1;
+    }
+
+    void print() {
+        cout << B::get() << " " << b;
+    }
 };
 
 int main() {
-    D *b2 = new D(1, 0);
-    b2->fun();
+    D d(10, 20);
+    d.change(7);
+    d.print();
     return 0;
 }
