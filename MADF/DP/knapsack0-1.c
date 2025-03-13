@@ -3,8 +3,6 @@
 #include <windows.h>
 #define MAX 100
 
-
-
 long long current_time_us() {
     LARGE_INTEGER freq, counter;
     QueryPerformanceFrequency(&freq);
@@ -60,14 +58,14 @@ void TraceBack(double p[], double w[], struct Pair pair[], int x[], int to, int 
 }
 void AlgorithmDKnap(double p[], double w[], int x[], int n, int to)
 {
-    b[0] = 1;
     pair[1].p = 0;
     pair[1].w = 0;
     int t = 1;
     int h = 1;
     int next = 2;
+    b[0] = 1;
     b[1] = 2;
-    for (int i = 1; i <=n; i++)
+    for (int i = 1; i <= n; i++)
     {
         int k = t;
         int u = Largest(pair, w, t, h, i, to);
@@ -110,8 +108,24 @@ void AlgorithmDKnap(double p[], double w[], int x[], int n, int to)
         h = next - 1;
         b[i + 1] = next;
     }
-    TraceBack(p, w, pair, x, to, n);  
+    TraceBack(p, w, pair, x, to, n);
+    printf("\n\n");
+    int cnt = 1;
+    for (int i = 0; i < n + 1; i++)
+    {
+        printf(" S%d: ", i);
+        for (int j = b[i]; j < b[i + 1]; j++)
+        {
+            printf(" (%.0lf,%.0lf ) ", pair[cnt].p, pair[cnt].w);
+            cnt++;
+        }
+        printf("\n");
+    }
+
+    printf("\n");
 }
+
+
 int main()
 {
     double p[MAX]; 
