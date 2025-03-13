@@ -1,6 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 #define MAX 100
+
+
+
+long long current_time_us() {
+    LARGE_INTEGER freq, counter;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&counter);
+    return (counter.QuadPart * 1000000) / freq.QuadPart;  // Convert to µs
+}
 
 struct Pair
 {
@@ -113,15 +123,19 @@ int main()
     scanf("%d", &n);
     printf("Enter the profits of items:\n");
     for (int i = 1; i <= n; i++)
-        scanf("%lf", &p[i]);
+    scanf("%lf", &p[i]);
     printf("\n");
     printf("Enter the weights of items:\n");
     for (int i = 1; i <= n; i++)
-        scanf("%lf", &w[i]);
+    scanf("%lf", &w[i]);
     printf("\n");
     printf("Enter capacity: ");
     scanf("%d", &to);
+    long long start = current_time_us();
     AlgorithmDKnap(p, w, x, n, to);
+    long long end = current_time_us();
+    
+    printf("\nTime taken: %lldμs\n", end - start);
     printf("\n   ");
     for (int i = 0; i < n; i++)
     {
@@ -136,3 +150,4 @@ int main()
     printf("\n");
     return 0;
 }
+
