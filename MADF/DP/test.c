@@ -1,56 +1,9 @@
 #include <stdio.h>
 #include <limits.h>
-#include<windows.h>
-
-long long current_time_us(){
-    LARGE_INTEGER freq, counter;
-    QueryPerformanceFrequency(&freq);
-    QueryPerformanceCounter(&counter);
-    return (counter.QuadPart * 1000000) / freq.QuadPart;
-}
-
 #define inf INT_MAX
-#define MAX 100 
-int n,k;
+#define MAX 100 // Maximum size for arrays
 
-void createGraph(int G[MAX][MAX]){
-    printf("Enter the number of vertices: ");
-    scanf("%d", &n);
-    printf("Enter the number of stages: ");
-    scanf("%d", &k);
-    int max_edges = n * (n - 1) / 2;
-    int origin, destin,weight;
-    for(int i = 0; i <= n; i++) {
-        for(int j = 0; j <= n; j++) {
-            if(i == j && (i!=0 && j!=0)) G[i][j] = 0;
-            else
-            G[i][j] = inf;
-        }
-    }
-
-    printf("(-1,-1) to quit\n");
-    printf("Enter edges and weight: \n");
-    for (int i = 1; i <= max_edges; i++)
-    {
-        scanf("%d%d%d", &origin, &destin,&weight);
-        if ((origin == -1) && (destin == -1))
-        {
-            break;
-        }
-        if (origin > n || destin > n || origin < 1 || destin < 1)
-        {
-            printf("Invalid edge\n");
-            i--;
-        }
-        else
-        {
-            G[origin][destin] = weight;
-        }
-    }
-
-
-}
-
+// Function to select the vertex with minimum cost
 int selectVertex(int c[MAX][MAX], int j, int cost[MAX], int n) {
     int min_cost = inf;
     int min_vertex = -1;
@@ -67,17 +20,18 @@ int selectVertex(int c[MAX][MAX], int j, int cost[MAX], int n) {
     return min_vertex;
 }
 
-
+// Function to implement the FGraph algorithm with 1-based indexing
 void FGraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
     int cost[MAX];
     int d[MAX] = {0};
     
-   
+    // Initialize cost array
     for (int i = 1; i <= n; i++) {
         cost[i] = inf;
     }
-    cost[n] = 0; 
+    cost[n] = 0; // Set the terminal vertex cost to 0
     
+    // Dynamic programming approach - compute cost from end to start
     for (int j = n-1; j >= 1; j--) {
         int r = selectVertex(c, j, cost, n);
         if (r != -1) {
@@ -98,13 +52,16 @@ void FGraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
         printf("r(%02d,%02d)=%02d\n", stage, j, d[j]);
     }
     
+    // Find minimum-cost path
     p[1] = 1;
     p[k] = n;
     
+    // Reconstruct the path
     for (int j = 2; j <= k-1; j++) {
         p[j] = d[p[j-1]];
     }
- 
+    
+    // Print the final path
     printf("Shortest path is: ");
     printf("%d", p[1]);
     for (int i = 2; i <= k; i++) {
@@ -173,64 +130,51 @@ void Bgraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
     printf("\nMincost=%d\n", bcost[n]);
 }
 
-void menu(){
-    printf("\nMenu\n");
-    printf("1. Forward Graph Algorithm\n");
-    printf("2. Backward Graph Algorithm\n");
-    printf("3. Exit\n");
-    printf("Enter your choice: ");
-}
-
 int main() {
-    int choice;
+    int n = 14;
+    int k = 5;
     int p[MAX] = {0};
     
-  
     int cost[MAX][MAX] = {0};
-    int G[MAX][MAX] = {0};
-    createGraph(G);
+    
+    // Initialize cost matrix with infinity
     for (int i = 0; i < MAX; i++) {
         for (int j = 0; j < MAX; j++) {
             cost[i][j] = inf;
         }
     }
+    
+    // Sample graph from the reference code
+    int graph[15][15] = {
+        {inf},
+        {inf,inf,9,8,6,7,inf,inf,inf,inf,inf,inf,inf,inf,inf},
+        {inf,inf,inf,inf,inf,inf,10,11,12,inf,inf,inf,inf,inf,inf},
+        {inf,inf,inf,inf,inf,inf,15,inf,14,13,inf,inf,inf,inf,inf},
+        {inf,inf,inf,inf,inf,inf,inf,10,11,12,inf,inf,inf,inf,inf},
+        {inf,inf,inf,inf,inf,inf,8,9,inf,10,inf,inf,inf,inf,inf},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,5,6,inf,7,inf},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,8,9,7,inf,inf},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,6,7,8,inf},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,5,inf,8,6,inf},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,8},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,9},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,8},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,7},
+        {inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf,inf},
+    };
+    
+    // Copy graph to cost matrix
     for (int i = 0; i < 15; i++) {
         for (int j = 0; j < 15; j++) {
-            cost[i][j] = G[i][j];
+            cost[i][j] = graph[i][j];
         }
     }
     
-    do
-    {
-        menu();
-        scanf("%d",&choice);
-        if (choice==1)
-        {
-            
-            printf("Forward Graph Algorithm:\n");
-            long long start = current_time_us();
-            FGraph(cost, k, n, p);
-            long long end = current_time_us();
-            printf("Time taken for forward graph: %lldμs\n", end - start);
-        }
-        else if(choice==2){
-            long long start = current_time_us();
-            printf("\nBackward Graph Algorithm:\n");
-            Bgraph(cost, k, n, p);
-            long long end=current_time_us();
-            printf("Time taken for backward graph: %lldμs\n", end - start);
-        }
-        else if(choice==3){
-            continue;
-        }
-        else{
-            printf("Invalid Input");
-        }
-    } while (choice!=3);
+    printf("Forward Graph Algorithm:\n");
+    FGraph(cost, k, n, p);
     
-
-    
+    printf("\nBackward Graph Algorithm:\n");
+    Bgraph(cost, k, n, p);
     
     return 0;
 }
-

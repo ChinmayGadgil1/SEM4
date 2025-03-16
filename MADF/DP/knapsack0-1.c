@@ -35,7 +35,7 @@ int Largest(struct Pair pair[], double w[], int t, int h, int i, int to)
 void TraceBack(double p[], double w[], struct Pair pair[], int x[], int to, int n)
 {
     double totalProfit = pair[b[n + 1] - 1].p, weight = pair[b[n + 1] - 1].w; 
-    printf("\nprofit=%.2lf,weight=%.2lf\n", totalProfit, pair[b[n + 1] - 1].w);
+    printf("\nprofit=%.2lf    weight=%.2lf\n", totalProfit, pair[b[n + 1] - 1].w);
     double remainingWeight = to;
     for (int i = n - 1; i >= 0; i--)
     {

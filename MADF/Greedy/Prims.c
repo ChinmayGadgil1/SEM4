@@ -1,10 +1,17 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <time.h>
+#include<sys/time.h>
 #define infinity INT_MAX
 #define MAX 20
 int n;
+
+long long current_time_us(){
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
+}
+
 struct Edge
 {
     int origin;
@@ -13,11 +20,6 @@ struct Edge
 
 void insert(struct Edge E[MAX], int origin, int destin)
 {
-    if(origin>destin){
-        int t=origin;
-        origin=destin;
-        destin=t;
-    }
     int i = 0;
     while (i < MAX && E[i].origin != -1)
     {
@@ -38,7 +40,7 @@ void insert(struct Edge E[MAX], int origin, int destin)
 
 void create(int cost[MAX][MAX], struct Edge E[MAX])
 {
-    int max_edges, origin, destin;
+    int max_edges, origin, destin,weight;
     printf("Enter number of vertices: ");
     scanf("%d", &n);
     max_edges = n * (n - 1) / 2;
@@ -51,10 +53,10 @@ void create(int cost[MAX][MAX], struct Edge E[MAX])
         }
     }
 
+    printf("Enter edges with weight (-1 -1 -1) to quit): \n");
     for (int i = 1; i <= max_edges; i++)
     {
-        printf("Enter edge %d((-1 -1) to quit): ", i);
-        scanf("%d%d", &origin, &destin);
+        scanf("%d%d%d", &origin, &destin,&weight);
         if ((origin == -1) && (destin == -1))
         {
             break;
@@ -66,9 +68,6 @@ void create(int cost[MAX][MAX], struct Edge E[MAX])
         }
         else
         {
-            printf("Enter cost: ");
-            int weight;
-            scanf("%d", &weight);
             cost[origin][destin] = weight;
             cost[destin][origin] = weight;
             insert(E, origin, destin);
@@ -97,7 +96,7 @@ struct Edge selectEdge(struct Edge E[MAX], int cost[MAX][MAX], int n)
     return minEdge;
 }
 
-void displayNear(int* near,int n,int cost[MAX][MAX]){
+void displayNear(int near[MAX],int n,int cost[MAX][MAX]){
     printf("\nnear: ");
     for (int i = 1; i <= n; i++)
     {
@@ -183,7 +182,7 @@ int main()
     int cost[MAX][MAX] = {infinity};
     struct Edge E[MAX] = {infinity};
     int t[MAX][2];
-
+    long long start,end;
     int choice, mincost;
     printf("\n1. Create graph\n");
     printf("2. Find Minimum Spanning Tree\n");
@@ -199,7 +198,12 @@ int main()
             create(cost, E);
             break;
         case 2:
+             start = current_time_us();
+
             mincost = prims(E, cost, n, t);
+            
+            end = current_time_us();
+            printf("\nTime taken: %lldμs\n", end - start);
             printf("Mincost: %d\n", mincost);
             for (int i = 0; i < n - 1; i++)
             {
