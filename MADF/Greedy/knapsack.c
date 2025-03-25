@@ -1,83 +1,219 @@
 #include <stdio.h>
 #define MAX 100
+#define inf 1000000
+#include <sys/time.h>
 
-double P[MAX];
-double W[MAX];
-double P_per_W[MAX];
-double X[MAX];
+long long current_time_us()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
+}
 
-void sort(double* arr, double* w, double* p, int n) {
-    for (int i = 0; i < n - 1; i++) {
-        int flag = 0;
-        for (int j = 0; j < n - i - 1; j++) {
-            if (arr[j] < arr[j + 1]) {
-                double tmp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = tmp;
-                
-                tmp = w[j];
-                w[j] = w[j + 1];
-                w[j + 1] = tmp;
-                
-                tmp = p[j];
-                p[j] = p[j + 1];
-                p[j + 1] = tmp;
-                
-                flag = 1;
+struct Item
+{
+    double weight;
+    double profit;
+    double profit_per_weight;
+    double x;
+    int index;
+};
+
+struct Item items[MAX];
+
+void Knapsack(int m, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        items[i].x = 0;
+    }
+
+    int u = m, i;
+    for (i = 0; i < n; i++)
+    {
+        if (items[i].weight > u)
+            break;
+        items[i].x = 1.0;
+        u -= items[i].weight;
+    }
+    if (i < n)
+    {
+        items[i].x = (double)u / items[i].weight;
+    }
+}
+
+void sort(struct Item items[], int n)
+{
+    struct Item temp;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (items[i].profit_per_weight < items[j].profit_per_weight)
+            {
+                temp = items[i];
+                items[i] = items[j];
+                items[j] = temp;
             }
         }
-        if (flag == 0) {
-            break;
+    }
+}
+
+void desort(struct Item items[], int n)
+{
+    struct Item temp;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (items[i].index > items[j].index)
+            {
+                temp = items[i];
+                items[i] = items[j];
+                items[j] = temp;
+            }
         }
     }
 }
 
-void Knapsack(int m, int n) {
-    for (int i = 0; i < n; i++) {
-        X[i] = 0;
+void display(struct Item items[], int n)
+{
+    double total_profit = 0, total_weight = 0;
+    printf("Items: \n");
+    printf("   ");
+    for (int i = 0; i < n; i++)
+    {
+        printf("[%02d]  ", items[i].index);
+        total_profit += items[i].profit * items[i].x;
+        total_weight += items[i].weight * items[i].x;
     }
-    int u = m, i;
-    for (i = 0; i < n; i++) {
-        if (W[i] > u) break;
-        X[i] = 1.0;
-        u -= W[i];
+    printf("\n");
+    printf("X: ");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%.2lf  ", items[i].x);
     }
-    if (i < n) {
-        X[i] = (double)u / W[i];
+    printf("\nTotal profit: %.2lf\tTotal weight: %.2lf\n", total_profit, total_weight);
+}
+
+void sortByProfit(struct Item items[], int n)
+{
+    struct Item temp;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (items[i].profit < items[j].profit)
+            {
+                temp = items[i];
+                items[i] = items[j];
+                items[j] = temp;
+            }
+        }
     }
 }
 
-int main() {
-    int m = 30, n = 10;
-    double x[] = {5, 5, 4, 2, 5, 6, 3, 4, 8, 2};
-    double y[] = {23, 13, 26, 34, 11, 26, 31, 19, 19, 26};
-
-    for (int i = 0; i < n; i++) {
-        W[i] = x[i];
-        P[i] = y[i];
+void sortByWeight(struct Item items[], int n)
+{
+    struct Item temp;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            if (items[i].weight > items[j].weight)
+            {
+                temp = items[i];
+                items[i] = items[j];
+                items[j] = temp;
+            }
+        }
     }
+}
 
-    
+int main()
+{
+    int m, n, choice;
+    long long start_time, end_time;
+    printf("Enter knapsack capacity: ");
+    scanf("%d", &m);
+    printf("Enter number of items: ");
+    scanf("%d", &n);
 
-    for (int i = 0; i < n; i++) {
-        P_per_W[i] = P[i] / W[i];
+    while (1)
+    {
+        printf("\nMenu\n");
+        printf("1. Enter weights and profits\n");
+        printf("2. Highest Profit solution\n");
+        printf("3. Lowest Weight solution\n");
+        printf("4. Most Optimal solution\n");
+        printf("5. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+        if (choice == 1)
+        {
+            printf("Enter weights: ");
+            for (int i = 0; i < n; i++)
+            {
+                scanf("%lf", &items[i].weight);
+            }
+
+            printf("Enter profits: ");
+            for (int i = 0; i < n; i++)
+            {
+                scanf("%lf", &items[i].profit);
+            }
+            for (int i = 0; i < n; i++)
+            {
+                items[i].profit_per_weight = items[i].profit / items[i].weight;
+
+                items[i].index = i;
+            }
+        }
+        else if (choice == 2)
+        {
+            start_time = current_time_us();
+            // Highest Profit
+            printf("\nHighest Profit solution:\n");
+            sortByProfit(items, n);
+            Knapsack(m, n);
+            desort(items, n);
+            display(items, n);
+            end_time = current_time_us();
+            printf("Time taken: %lld microseconds\n", end_time - start_time);
+        }
+        else if (choice == 3)
+        {
+            // Lowest Weight
+            start_time = current_time_us();
+            printf("\nLowest Weight solution:\n");
+            sortByWeight(items, n);
+            Knapsack(m, n);
+            desort(items, n);
+            display(items, n);
+            end_time = current_time_us();
+            printf("Time taken: %lld microseconds\n", end_time - start_time);
+        }
+        else if (choice == 4)
+        {
+            // Optimal
+            start_time = current_time_us();
+            printf("\nMost Optimal solution:\n");
+            sort(items, n);
+            Knapsack(m, n);
+            desort(items, n);
+            display(items, n);
+            end_time = current_time_us();
+            printf("Time taken: %lld microseconds\n", end_time - start_time);
+        }
+        else if (choice == 5)
+        {
+            return 0;
+        }
+        else
+        {
+            printf("Invalid choice\n");
+        }
     }
-
-    sort(P_per_W, W, P, n);
-
-    printf("\n");
-
-    Knapsack(m, n);
-
-    double max_prof = 0;
-    double w = 0;
-    for (int i = 0; i < n; i++) {
-        printf("%.2f ", X[i]);
-        max_prof += X[i] * P[i];
-        w += (X[i] * W[i]);
-    }
-    printf("\n");
-    printf("%.2f    %.2f\n", w, max_prof);
 
     return 0;
 }

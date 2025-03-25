@@ -1,19 +1,21 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
-int var = 0;  // Global variable
-
-namespace name {
-    int var = 2;  // Variable inside the namespace 'name'
-}
+template <typename T, int n> // LINE-1
+class MultiPrint {
+    T val;
+public:
+    MultiPrint(T _val) : val(_val) {}
+    void output() {
+        for (int i = 0; i < n; i++)
+            cout << val << " ";
+    }
+};
 
 int main() {
-    int var = 1;  // Local variable inside main()
-
-    {
-        using namespace name;  // Brings namespace 'name' into scope
-        cout << ::var << " " << var << " " << name::var;  // LINE-1
-    }
-
+    int n = 3; // n declared as a constant
+    MultiPrint<string, n> d("hello"); // LINE-2
+    d.output();
     return 0;
 }

@@ -7,7 +7,7 @@ long long current_time_us() {
     LARGE_INTEGER freq, counter;
     QueryPerformanceFrequency(&freq);
     QueryPerformanceCounter(&counter);
-    return (counter.QuadPart * 1000000) / freq.QuadPart;  // Convert to µs
+    return (counter.QuadPart * 1000000) / freq.QuadPart;  
 }
 
 struct Pair
