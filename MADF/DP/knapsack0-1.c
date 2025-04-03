@@ -25,12 +25,17 @@ int maxm(int a, int b)
 }
 int Largest(struct Pair pair[], double w[], int t, int h, int i, int to)
 {
-    for (int j = t; j <= h; j++)
-    {
-        if (pair[j].w > to)
-            return j - 1;
+    int low = t, high = h, ans = t - 1;
+    while (low <= high) {
+        int mid = (low + high) / 2;
+        if (pair[mid].w <= to) {
+            ans = mid;
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
     }
-    return h;
+    return ans;
 }
 void TraceBack(double p[], double w[], struct Pair pair[], int x[], int to, int n)
 {
