@@ -1,15 +1,23 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <time.h>
 #include <stdbool.h>
+#include<sys/time.h>
+
+
+long long current_time_us(){
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
+}
+
 #define infinity INT_MAX
 #define MAX 20
 int n;
 
 void create(int cost[MAX][MAX])
 {
-    int max_edges, origin, destin;
+    int max_edges, origin, destin,weight;
     printf("Enter number of vertices: ");
     scanf("%d", &n);
     max_edges = n * (n - 1);
@@ -24,8 +32,8 @@ void create(int cost[MAX][MAX])
 
     for (int i = 1; i <= max_edges; i++)
     {
-        printf("Enter edge %d((-1 -1) to quit): ", i);
-        scanf("%d%d", &origin, &destin);
+        printf("Enter edge %d((-1 -1 -1) to quit): ", i);
+        scanf("%d%d%d", &origin, &destin,&weight);
         if ((origin == -1) && (destin == -1))
         {
             break;
@@ -37,10 +45,8 @@ void create(int cost[MAX][MAX])
         }
         else
         {
-            printf("Enter cost: ");
-            int weight;
-            scanf("%d", &weight);
             cost[origin][destin] = weight;
+
         }
     }
 }
@@ -64,109 +70,80 @@ int selectVertex(int dist[], bool s[], int n)
     }
     return minIndex;
 }
-void display(int dist[],bool s[], int n)
-{
-    bool flag=false;
-    printf("\n");
-    for (int i = 1; i <=n; i++)
-    {
-        if(s[i]==true){
-            printf("s[%d]=",i);
-            flag=true;
-        }
-    }
-    if(flag)
-        printf("true\n");
 
-    flag=false;
-    for (int i = 1; i <=n; i++)
-    {
-        if(s[i]==false){
-            printf("s[%d]=",i);
-            flag=true;
-        }
+void printPath(int pred[], int v, int dest) {
+    if (dest == v) {
+        printf("%d", v);
+        return;
     }
-    if(flag)
-        printf("false\n\n");
+    if (pred[dest] == -1) {
+        printf("No path exists");
+        return;
+    }
+    printPath(pred, v, pred[dest]);
+    printf(" -> %d", dest);
+}
 
+void display(int dist[], bool s[], int n, int pred[], int v) {
+    printf("\nSource\tDestination\tDistance\tPath\n");
+    printf("------\t-----------\t--------\t----\n");
     
-    for (int i = 1; i <= 4; i++)
-    {
-        if (dist[i] == infinity)
-        {
-            printf("dist[%d]=inf ",i);
-        }
-        else
-        {
-            printf("dist[%d]=%-3d ",i, dist[i]);
-        }
-        if (dist[2 * i] == infinity)
-        {
-            printf("   dist[%d]=inf\n",2*i);
-        }
-        else
-        {
-            printf("   dist[%d]=%-3d\n",2*i, dist[2*i]);
+    for (int i = 1; i <= n; i++) {
+        if (i != v) {  // Don't print path to itself
+            printf("%d\t%d\t\t", v, i);
+            if (dist[i] == infinity) {
+                printf("INF\t\tNo path\n");
+            } else {
+                printf("%d\t\t", dist[i]);
+                printPath(pred, v, i);
+                printf("\n");
+            }
         }
     }
     printf("\n");
 }
-void shortestPath(int v, int cost[MAX][MAX], int dist[], int n)
-{
+
+void shortestPath(int v, int cost[MAX][MAX], int dist[], int n) {
     bool s[n + 1];
+    int pred[n + 1];  // Add predecessor array
     int u;
-    for (int i = 1; i <= n; i++)
-    {
+    
+    // Initialize
+    for (int i = 1; i <= n; i++) {
         dist[i] = cost[v][i];
         s[i] = false;
+        pred[i] = (cost[v][i] != infinity) ? v : -1;
     }
-    printf("\nStep1\n");
-    display(dist,s, n);
+    
     dist[v] = 0;
     s[v] = true;
-    for (int i = 2; i <= n; i++)
-    {
+    pred[v] = -1;
+
+    for (int i = 2; i <= n; i++) {
         u = selectVertex(dist, s, n);
         s[u] = true;
-        for (int w = 1; w <= n; w++)
-        {
-            if (cost[u][w] != infinity && s[w] == false)
-            {
-                if (dist[w] > dist[u] + cost[u][w])
-                {
+        
+        for (int w = 1; w <= n; w++) {
+            if (!s[w] && cost[u][w] != infinity) {
+                if (dist[w] > dist[u] + cost[u][w]) {
                     dist[w] = dist[u] + cost[u][w];
+                    pred[w] = u;  // Update predecessor
                 }
             }
         }
-        display(dist,s, n);
     }
+    
+    // Final path display
+    display(dist, s, n, pred, v);
 }
-
 int main()
 {
     int cost[MAX][MAX] = {infinity};
-    n = 8;
-    int test[9][9] = {
-        {infinity, infinity, infinity, infinity, infinity, infinity, infinity, infinity, infinity},
-        {infinity, infinity, 20, 40, infinity, 50, 40, infinity, infinity},
-        {infinity, infinity, infinity, 15, 10, 5, infinity, infinity, infinity},
-        {infinity, infinity, infinity, infinity, infinity, infinity, infinity, infinity, 5},
-        {infinity, infinity, infinity, 2, infinity, infinity, 8, infinity, infinity},
-        {infinity, infinity, infinity, infinity, 3, infinity, infinity, 8, infinity},
-        {infinity, infinity, infinity, 3, infinity, 6, infinity, infinity, 4},
-        {infinity, infinity, 3, infinity, infinity, infinity, 2, infinity, 2},
-        {infinity, infinity, 3, infinity, infinity, 2, infinity, infinity, infinity}};
-
-    for (int i = 1; i <= 8; i++)
-    {
-        for (int j = 1; j <= 8; j++)
-        {
-            cost[i][j] = test[i][j];
-        }
-    }
-
     int dist[MAX];
+    long long start;
 
+    long long end;
+   
     int choice, mincost, v;
     printf("\n1. Create graph\n");
     printf("2. Find shortest path\n");
@@ -184,7 +161,10 @@ int main()
         case 2:
             printf("Enter start vertex:");
             scanf("%d", &v);
+            start=current_time_us();
             shortestPath(v, cost, dist, n);
+            end=current_time_us();
+            printf("\nTime taken: %lldμs\n", end - start);
             break;
         case 3:
             exit(0);
@@ -196,3 +176,7 @@ int main()
 
     return 0;
 }
+
+
+
+

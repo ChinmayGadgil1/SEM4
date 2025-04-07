@@ -33,15 +33,30 @@ struct Heap* createHeap(int capacity) {
 }
 
 void Adjust(struct Edge a[], int i, int n) {
+
     int j = 2 * i;
     struct Edge item = a[i];
     
     while (j <= n) {
-        if ((j < n) && (a[j].cost > a[j + 1].cost)) {
-            j = j + 1;
+        if (j < n) {
+            // Compare first by cost
+            if (a[j].cost > a[j + 1].cost) {
+                j = j + 1;
+            }
+            // If costs are equal, compare by origin (u)
+            else if (a[j].cost == a[j + 1].cost && a[j].u > a[j + 1].u) {
+                j = j + 1;
+            }
+            // If costs and origins are equal, compare by destination (v)
+            else if (a[j].cost == a[j + 1].cost && a[j].u == a[j + 1].u && a[j].v > a[j + 1].v) {
+                j = j + 1;
+            }
         }
         
-        if (item.cost <= a[j].cost) {
+        // Compare with item using the same priority order
+        if (item.cost < a[j].cost || 
+            (item.cost == a[j].cost && item.u < a[j].u) ||
+            (item.cost == a[j].cost && item.u == a[j].u && item.v < a[j].v)) {
             break;
         }
         
@@ -123,11 +138,36 @@ int Kruskal(struct Edge E[], int cost[MAX][MAX], int n, int t[MAX][3], int edge_
         parent[i] = -1;
     }
 
+    printf("\n-------------");
+    for (int i = 0; i < n; i++)
+    {
+        printf("-----");
+    }
+    printf("---------------");
+    printf("\n");
+    
+    printf("Step  (u,v)   ");
+    for (int i = 1; i <= n; i++) {
+        printf(" [%d] ", i);
+    }
+    printf("(j,k)  mincost");
+    
+    printf("\n-------------");
+    for (int i = 0; i < n; i++)
+    {
+        printf("-----");
+    }
+    printf("---------------");
+    printf("\n             ");
+    for (int i = 1; i <= n; i++) {
+        printf("%4d ", parent[i]);
+    }
+    printf("\n");
+
     int i = 0;
     int mincost = 0;
  
     while ((i < n - 1) && (edge_count > 0)) {
-
         struct Edge minEdge;
         if (DelMin(E, edge_count, &minEdge)) {
             edge_count--;
@@ -138,22 +178,22 @@ int Kruskal(struct Edge E[], int cost[MAX][MAX], int n, int t[MAX][3], int edge_
             int k = Find(parent, v);
     
             if (j != k) {
-      
                 i = i + 1;
-                
-
                 t[i][1] = u;
                 t[i][2] = v;
-                
-
                 mincost = mincost + cost[u][v];
-                
-
                 Union(parent, j, k);
+
+                // Print parent array after each union
+                printf("Step%d (%d,%d): ",i, u, v);
+                for (int x = 1; x <= n; x++) {
+                    printf("%4d ", parent[x]);
+                }
+                printf(" (%d,%d)",j,k);
+                printf("     %d\n",mincost);
             }
         }
     }
-    
 
     if (i != n - 1) {
         printf("No spanning tree\n");

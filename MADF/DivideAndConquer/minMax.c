@@ -2,6 +2,14 @@
 #include <limits.h>
 #include <math.h>
 #include<time.h>
+#include<sys/time.h>
+
+
+long long current_time_us(){
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
+}
 
 #define MAX 1000
 
@@ -185,9 +193,6 @@ void display()
 
 int main()
 {
-    double cpu_time_used;
-     clock_t start, end;
-
     int choice;
     do
     {
@@ -220,12 +225,13 @@ int main()
             {
                 int min, max;
                 printf("\n  i    j   min   max");
-                start=clock();
+                long long start = current_time_us();
                 MinMax(0, n - 1, &min, &max);
-                end=clock();
-                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+                long long end = current_time_us();
+                printf("\nTime taken: %lldμs\n", end - start);
                 printf("\nMinimum: %d\nMaximum: %d\n", min, max);
-                printf("Time taken to find the min and max element: %f seconds\n", cpu_time_used);
+                
                 display();
             }
             break;
@@ -241,3 +247,6 @@ int main()
 
     return 0;
 }
+
+
+
