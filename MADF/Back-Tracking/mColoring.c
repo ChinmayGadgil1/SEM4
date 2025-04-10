@@ -156,16 +156,65 @@ int findChromaticNumber() {
     return -1; 
 }
 
+
+void displayMenu() {
+    printf("\nGraph Coloring Algorithm Menu\n");
+    printf("============================\n");
+    printf("1. Initialize new graph\n");
+    printf("2. Display current graph\n");
+    printf("3. Find chromatic number\n");
+    printf("4. Exit\n");
+    printf("Enter your choice: ");
+}
+
 int main() {
-    printf("Graph Coloring Algorithm - Chromatic Number Finder\n");
-    printf("================================================\n");
+    int choice;
+    bool graphInitialized = false;
     
-    initializeGraph();
-    displayGraph();
+    printf("Graph Coloring Algorithm - Menu Driven\n");
+    printf("=====================================\n");
     
-    printf("\nFinding chromatic number automatically...\n");
-    int chromaticNumber = findChromaticNumber();
+    do {
+        displayMenu();
+        scanf("%d", &choice);
+        
+        switch(choice) {
+            case 1:
+                if (graphInitialized) {
+                    cleanup();
+                }
+                initializeGraph();
+                graphInitialized = true;
+                printf("\nGraph initialized successfully!\n");
+                break;
+                
+            case 2:
+                if (!graphInitialized) {
+                    printf("\nPlease initialize the graph first!\n");
+                    break;
+                }
+                displayGraph();
+                break;
+                
+            case 3:
+                if (!graphInitialized) {
+                    printf("\nPlease initialize the graph first!\n");
+                    break;
+                }
+                printf("\nFinding chromatic number automatically...\n");
+                findChromaticNumber();
+                break;
+                
+            case 4:
+                if (graphInitialized) {
+                    cleanup();
+                }
+                break;
+                
+            default:
+                printf("\nInvalid choice! Please try again.\n");
+        }
+    } while (choice != 5);
     
-    cleanup();
     return 0;
 }
