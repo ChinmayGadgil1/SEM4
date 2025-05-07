@@ -105,7 +105,7 @@ void display(int dist[], bool s[], int n, int pred[], int v) {
 
 void shortestPath(int v, int cost[MAX][MAX], int dist[], int n) {
     bool s[n + 1];
-    int pred[n + 1];  // Add predecessor array
+    int pred[n + 1];  
     int u;
     
     // Initialize
@@ -119,6 +119,20 @@ void shortestPath(int v, int cost[MAX][MAX], int dist[], int n) {
     s[v] = true;
     pred[v] = -1;
 
+    // Print initial state
+    printf("\nInitial state:");
+    printf("\nDist array: ");
+    for(int i = 1; i <= n; i++) {
+        if(dist[i] == infinity)
+            printf("INF ");
+        else
+            printf("%d ", dist[i]);
+    }
+    printf("\nS array: ");
+    for(int i = 1; i <= n; i++)
+        printf("%d ", s[i]);
+    printf("\n");
+
     for (int i = 2; i <= n; i++) {
         u = selectVertex(dist, s, n);
         s[u] = true;
@@ -127,10 +141,24 @@ void shortestPath(int v, int cost[MAX][MAX], int dist[], int n) {
             if (!s[w] && cost[u][w] != infinity) {
                 if (dist[w] > dist[u] + cost[u][w]) {
                     dist[w] = dist[u] + cost[u][w];
-                    pred[w] = u;  // Update predecessor
+                    pred[w] = u;  
                 }
             }
         }
+
+        // Print state after each iteration
+        printf("\nAfter iteration %d:", i-1);
+        printf("\nDist array: ");
+        for(int j = 1; j <= n; j++) {
+            if(dist[j] == infinity)
+                printf("INF ");
+            else
+                printf("%d ", dist[j]);
+        }
+        printf("\nS array: ");
+        for(int j = 1; j <= n; j++)
+            printf("%d ", s[j]);
+        printf("\n");
     }
     
     // Final path display

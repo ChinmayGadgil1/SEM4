@@ -159,8 +159,15 @@ int main() {
                 break;
             case 2:
                 printf("Finding Hamiltonian cycles...\n");
-                findHamiltonianCycles();
-
+             
+                if (G == NULL) {
+                    printf("Please create a graph first!\n");
+                    break;
+                }
+                    long long start = current_time_us();
+                    findHamiltonianCycles();
+                    long long end = current_time_us();
+                    printf("\nTime taken: %lldμs\n", end - start);
                 break;
             case 3:
                 printf("Exiting...\n");

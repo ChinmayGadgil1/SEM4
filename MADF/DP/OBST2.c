@@ -3,27 +3,21 @@
 #include <stdlib.h>
 #include <string.h>
 #define MAX 100
-
 int w[MAX][MAX];
 int c[MAX][MAX];
 int r[MAX][MAX];
-
 char* iden[MAX];
-
-// Structure for tree node
 typedef struct TreeNode {
     char* key;
     int index;
     struct TreeNode* left;
     struct TreeNode* right;
 } TreeNode;
-
 long long current_time_us(){
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec * 1000000LL + tv.tv_usec;
 }
-
 int Find(int c[MAX][MAX], int r[MAX][MAX], int i, int j)
 {
     int l;
@@ -42,7 +36,6 @@ void printLevel(TreeNode* root, int level)
 {
     if (root == NULL)
     {
-        // Print placeholder for empty nodes to maintain structure
         if (level == 1)
             printf("NULL  ");
         return;
@@ -66,7 +59,6 @@ void preorder(int r[MAX][MAX], int i, int j, char *identifiers[])
     preorder(r, i, r[i][j] - 1, identifiers);
     preorder(r, r[i][j], j, identifiers);
 }
-
 void inorder(int r[MAX][MAX], int i, int j, char *identifiers[])
 {
     if (i >= j)
@@ -77,7 +69,6 @@ void inorder(int r[MAX][MAX], int i, int j, char *identifiers[])
     printf(" %s(k=%d) ", identifiers[r[i][j]], r[i][j]);
     inorder(r, r[i][j], j, identifiers);
 }
-
 void postorder(int r[MAX][MAX], int i, int j, char *identifiers[])
 {
     if (i >= j)
@@ -88,8 +79,6 @@ void postorder(int r[MAX][MAX], int i, int j, char *identifiers[])
     postorder(r, r[i][j], j, identifiers);
     printf(" %s(k=%d) ", identifiers[r[i][j]], r[i][j]);
 }
-
-// Function to construct tree from r matrix
 TreeNode* constructTree(int r[MAX][MAX], int i, int j, char *identifiers[])
 {
     if (i >= j || r[i][j] == 0)
@@ -103,8 +92,6 @@ TreeNode* constructTree(int r[MAX][MAX], int i, int j, char *identifiers[])
     
     return node;
 }
-
-// Function to get height of the tree
 int getHeight(TreeNode* root)
 {
     if (root == NULL)
@@ -115,17 +102,11 @@ int getHeight(TreeNode* root)
     
     return (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
 }
-
-// Function to print tree level by level
 void printLevelOrder(TreeNode* root)
 {
     if (root == NULL)
         return;
-    
-    // Get height of tree
     int h = getHeight(root);
-    
-    // Print tree level by level
     for (int i = 1; i <= h; i++)
     {
         printf("\nLevel %d: ", i);
@@ -133,27 +114,17 @@ void printLevelOrder(TreeNode* root)
         printf("\n");
     }
 }
-
-// Function to print nodes at a specific level
-
 void fillTree(char*** tree, TreeNode* root, int level, int start, int end)
 {
     if (root == NULL)
         return;
-        
     int mid = (start + end) / 2;
-    
-    // Allocate memory and store the node value
     char buffer[50];
     sprintf(buffer, "%s(%d)", root->key, root->index);
     tree[level][mid] = strdup(buffer);
-    
-    // Recursively fill left and right subtrees
     fillTree(tree, root->left, level + 1, start, mid - 1);
     fillTree(tree, root->right, level + 1, mid + 1, end);
 }
-
-// Function to print tree graphically
 void printTree(TreeNode* root)
 {
     if (root == NULL)
@@ -161,8 +132,6 @@ void printTree(TreeNode* root)
         
     int height = getHeight(root);
     int width = (1 << height) - 1;
-    
-    // Create a 2D array to store the tree
     char*** tree = (char***)malloc(height * sizeof(char**));
     for (int i = 0; i < height; i++)
     {
@@ -170,11 +139,7 @@ void printTree(TreeNode* root)
         for (int j = 0; j < width; j++)
             tree[i][j] = NULL;
     }
-    
-    // Fill the 2D array with tree elements
     fillTree(tree, root, 0, 0, width - 1);
-    
-    // Print the tree
     printf("\n\nVisual Representation of OBST:\n");
     for (int i = 0; i < height; i++)
     {
@@ -187,8 +152,6 @@ void printTree(TreeNode* root)
         }
         printf("\n");
     }
-    
-    // Free the 2D array
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -198,10 +161,6 @@ void printTree(TreeNode* root)
     }
     free(tree);
 }
-
-// Helper function to fill the 2D array
-
-// Free the tree memory
 void freeTree(TreeNode* root)
 {
     if (root == NULL)
@@ -211,7 +170,6 @@ void freeTree(TreeNode* root)
     freeTree(root->right);
     free(root);
 }
-
 void OBST(int p[], int q[], int n)
 {
     for (int i = 0; i <= n - 1; i++)
@@ -299,16 +257,10 @@ void OBST(int p[], int q[], int n)
     inorder(r, 0, n, iden);
     printf("\n\nPostorder Traversal\n");
     postorder(r, 0, n, iden);
-    
-    // Construct and display the tree
     TreeNode* root = constructTree(r, 0, n, iden);
     printf("\n\nLevel-Order Tree Display:\n");
     printLevelOrder(root);
-    
-    // Print tree graphically
     printTree(root);
-    
-    // Free the tree
     freeTree(root);
 }
 

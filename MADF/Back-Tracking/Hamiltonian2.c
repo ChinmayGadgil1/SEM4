@@ -1,12 +1,21 @@
+
 #include <stdio.h>
+#include<sys/time.h>
 #define MAX 100
 #define TRUE 1
 #define FALSE 0
+
+long long current_time_us(){
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
+}
 
 int G[MAX][MAX];
 int leafCount = 0, solnCount = 0, startVertex = 0;
 int soln[MAX][MAX];
 int solnLen[MAX];
+int n = 0;  // Moved n to global scope
 
 void printPath(int x[], int n, int flag) {
     if (flag == TRUE)
@@ -35,7 +44,6 @@ void store_solution(int x[], int n) {
 }
 
 void print_solutions() {
-  
     for (int i = 0; i < solnCount; i++) {
         printf("%d: ", i + 1);
         for (int j = 1; j <= solnLen[i]; j++) {
@@ -104,8 +112,7 @@ void Hamiltonian(int x[], int n, int k) {
     } while (TRUE);
 }
 
-int main() {
-    int n, x[MAX], k;
+void enter_matrix() {
     printf("Enter the number of nodes: ");
     scanf("%d", &n);
     printf("Enter the adjacency matrix (0/1):\n");
@@ -113,13 +120,54 @@ int main() {
         for (int j = 1; j <= n; j++)
             scanf("%d", &G[i][j]);
     }
+}
+
+void find_hamiltonian() {
+    if (n == 0) {
+        printf("Please enter adjacency matrix first!\n");
+        return;
+    }
+    int x[MAX];
     solnCount = 0;
+    leafCount = 0;
+    x[1] = 1;
+    for (int i = 2; i <= n; i++)
+        x[i] = 0;
     
-        x[1] = 1;
-        for (int i = 2; i <= n; i++)
-            x[i] = 0;
-        Hamiltonian(x, n, 2);
+    long long start = current_time_us();
+    Hamiltonian(x, n, 2);
+    long long end = current_time_us();
+    
+    printf("\nTime taken: %lldμs\n", end - start);
     print_solutions();
     printf("\nTotal number of solutions: %d\n", solnCount);
+}
+
+int main() {
+    int choice;
+    do {
+        printf("\nHamiltonian Cycle Finder\n");
+        printf("1. Enter adjacency matrix\n");
+        printf("2. Find Hamiltonian cycles\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                enter_matrix();
+                break;
+            case 2:
+                find_hamiltonian();
+                break;
+            case 3:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while(choice != 3);
+    
     return 0;
 }
+
