@@ -146,7 +146,7 @@ void find_hamiltonian() {
 int main() {
     int choice;
     do {
-        printf("\nHamiltonian Cycle Finder\n");
+        printf("\nMenu\n");
         printf("1. Enter adjacency matrix\n");
         printf("2. Find Hamiltonian cycles\n");
         printf("3. Exit\n");
