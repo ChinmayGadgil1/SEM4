@@ -10,8 +10,8 @@ struct MinHeapNode {
     char data;
     unsigned freq;
     struct MinHeapNode *left, *right;
-    int first_occurrence; // Position of first occurrence in string for chars
-    int tree_num;         // Tree number for internal nodes (0 for character nodes)
+    int first_occurrence; 
+    int tree_num;         
 };
 
 struct MinHeap {
@@ -50,25 +50,19 @@ void swapMinHeapNode(struct MinHeapNode** a, struct MinHeapNode** b) {
     *b = t;
 }
 
-// Compare two nodes: return 1 if a should come before b
 int compareNodes(struct MinHeapNode* a, struct MinHeapNode* b) {
-    // First compare by frequency
     if (a->freq != b->freq) {
         return a->freq < b->freq;
     }
     
-    // For same frequency, if one is character and other is internal node
-    // character nodes come first
     if ((a->data != '$') != (b->data != '$')) {
         return a->data != '$';  // True if a is character node
     }
     
-    // Both are character nodes with same frequency
     if (a->data != '$' && b->data != '$') {
         return a->first_occurrence < b->first_occurrence;
     }
     
-    // Both are internal nodes with same frequency
     return a->tree_num < b->tree_num;
 }
 
@@ -107,7 +101,6 @@ void insertMinHeap(struct MinHeap* minHeap, struct MinHeapNode* minHeapNode) {
     ++minHeap->size;
     int i = minHeap->size - 1;
     
-    // Find the right position based on our priority rules
     while (i > 0) {
         int parent = (i - 1) / 2;
         if (compareNodes(minHeapNode, minHeap->array[parent])) {
@@ -127,17 +120,14 @@ void buildMinHeap(struct MinHeap* minHeap) {
         minHeapify(minHeap, i);
 }
 
-// Sort characters by first occurrence for initial heap
 int* sortByFirstOccurrence(char* input, int* char_count) {
     int len = strlen(input);
     int* char_order = (int*)malloc(MAX_CHARS * sizeof(int));
     
-    // Initialize all positions to -1 (not found)
     for (int i = 0; i < MAX_CHARS; i++) {
         char_order[i] = -1;
     }
     
-    // Record first occurrence of each character
     *char_count = 0;
     for (int i = 0; i < len; i++) {
         unsigned char ch = input[i];
@@ -155,16 +145,13 @@ struct MinHeap* createInitialHeap(char* input) {
     int char_count = 0;
     int* first_occurrences = sortByFirstOccurrence(input, &char_count);
     
-    // Count frequencies
     int freq[MAX_CHARS] = {0};
     for (int i = 0; i < len; i++) {
         freq[(unsigned char)input[i]]++;
     }
     
-    // Create min heap
     struct MinHeap* minHeap = createMinHeap(char_count);
     
-    // Create nodes for each character and add to an array
     struct MinHeapNode** nodes = (struct MinHeapNode**)malloc(char_count * sizeof(struct MinHeapNode*));
     int node_count = 0;
     
@@ -174,7 +161,6 @@ struct MinHeap* createInitialHeap(char* input) {
         }
     }
     
-    // Sort nodes by frequency and first occurrence
     for (int i = 0; i < node_count - 1; i++) {
         for (int j = 0; j < node_count - i - 1; j++) {
             if (!compareNodes(nodes[j], nodes[j+1])) {
@@ -185,7 +171,6 @@ struct MinHeap* createInitialHeap(char* input) {
         }
     }
     
-    // Add sorted nodes to the heap
     for (int i = 0; i < node_count; i++) {
         minHeap->array[i] = nodes[i];
     }
@@ -199,15 +184,12 @@ struct MinHeap* createInitialHeap(char* input) {
     return minHeap;
 }
 
-// Create a sorted copy of the min heap for display
 struct MinHeapNode** getSortedHeapArray(struct MinHeap* minHeap) {
-    // Create a copy of the heap
     struct MinHeapNode** sortedArray = (struct MinHeapNode**)malloc(minHeap->size * sizeof(struct MinHeapNode*));
     for (int i = 0; i < minHeap->size; i++) {
         sortedArray[i] = minHeap->array[i];
     }
     
-    // Sort the copy using our comparison function
     for (int i = 0; i < minHeap->size - 1; i++) {
         for (int j = 0; j < minHeap->size - i - 1; j++) {
             if (!compareNodes(sortedArray[j], sortedArray[j+1])) {
@@ -221,11 +203,9 @@ struct MinHeapNode** getSortedHeapArray(struct MinHeap* minHeap) {
     return sortedArray;
 }
 
-// Print min heap in order of priority
 void printMinHeap(struct MinHeap* minHeap) {
     struct MinHeapNode** sortedArray = getSortedHeapArray(minHeap);
     
-    // First row: symbols
     for (int i = 0; i < minHeap->size; i++) {
         if (sortedArray[i]->data == '$') {
             printf("T%-2d ", sortedArray[i]->tree_num);
@@ -234,8 +214,6 @@ void printMinHeap(struct MinHeap* minHeap) {
         }
     }
     printf("\n");
-    
-    // Second row: frequencies
     for (int i = 0; i < minHeap->size; i++) {
         printf("%-3u ", sortedArray[i]->freq);
     }
@@ -294,7 +272,6 @@ struct MinHeapNode* buildHuffmanTree(char* input) {
         }
         
         treeCount++;
-        // Create a new internal node with '$' as data
         top = newNode('$', left->freq + right->freq, INT_MAX, treeCount);
         top->left = left;
         top->right = right;
@@ -372,7 +349,7 @@ void compressString(char* input) {
     storeCodes(root, arr, top, huffmanCode);
     
     int compressedBits = 0;
-    len = strlen(input);  // Reset len to original length
+    len = strlen(input);  
     for (int i = 0; i < len; i++) {
         if (huffmanCode[(int)input[i]] != NULL) {
             compressedBits += strlen(huffmanCode[(int)input[i]]);
