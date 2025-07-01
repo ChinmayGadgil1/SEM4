@@ -1,16 +1,83 @@
-34 56 -19 26 58 38 30 -24 22 35 76
 
-void displayTut(int low, int high, int pivot, int i, int j) {
-    printf("Pivot: %d\n", pivot);
-    printf("Array: [ ");
-    for (int k = low; k <= high; k++) {
-        if (k == i) {
-            printf("(%d) ", arr[k]);
-        } else if (k == j) {
-            printf("[%d] ", arr[k]);
-        } else {
-            printf("%d ", arr[k]);
+void insert(char c){
+    struct listNode* ptr=start;
+    while(ptr!=NULL){
+        if(ptr->tptr->data==c){
+            (ptr->tptr->freq)++;
+            break;
+        }
+        ptr=ptr->next;
+    }
+
+    //if it is already there
+    if(ptr!=NULL){
+        struct listNode* p,*q,*prev=NULL,*tmp;
+        p=start;
+        q=start->next;
+
+        while(q!=NULL){
+            if(q->tptr->freq<p->tptr->freq){
+                p->next=q->next;
+                q->next=p;
+                if(prev!=NULL){
+                    prev->next=q;
+                }else{
+                    start=q;
+                }
+                //swap to make pointers right again
+                tmp=p;
+                p=q;q=tmp;
+            }
+
+            
+
+            p=p->next;
+            q=q->next;
+            prev=prev->next;
         }
     }
-    printf("]\n");
+    else{
+        struct node* tmp=(struct node* )malloc(sizeof(struct node));
+        tmp->lchild=NULL;
+        tmp->rchild=NULL;
+        tmp->freq=1;
+        tmp->data=c;
+        size++;
+        struct listNode* newNode=(struct listNode* )malloc(sizeof(struct listNode));
+        newNode->tptr=tmp;
+
+        if(start==NULL){
+            newNode->next=NULL;
+            start=newNode;
+            return;
+        }
+        
+        if(start->next==NULL){
+            if(start->tptr->freq<=newNode->tptr->freq){
+                newNode->next=NULL;
+                start->next=newNode;
+            }else{
+                newNode->next=start;
+                start=newNode;
+            }
+            return;
+        }
+        
+        struct listNode* p=start;
+        while(p->next!=NULL){
+            if(p->next->tptr->freq<=newNode->tptr->freq){
+                p=p->next;
+            }else{
+                break;
+            }
+        }
+
+        if(p->next==NULL){
+            p->next=newNode;
+            newNode->next=NULL;
+        }else{
+            newNode->next=p->next;
+            p->next=newNode;
+        }
+    }
 }

@@ -24,11 +24,11 @@ void displayMatrix(int n)
         {
             if (x[i] == j)
             {
-                printf("Q%d ", i);
+                printf("Q%2d ", i);
             }
             else
             {
-                printf("-- ");
+                printf("--- ");
             }
         }
         printf("\n");

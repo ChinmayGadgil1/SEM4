@@ -19,7 +19,6 @@ void AllPairShortest(int cost[MAX][MAX],int A[MAX][MAX],int n){
         {
             A[i][j]=cost[i][j];
         }
-        
     }
     for (int k = 1; k <=n; k++)
     {

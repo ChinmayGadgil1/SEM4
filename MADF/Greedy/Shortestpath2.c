@@ -102,7 +102,7 @@ void ShortestPaths(int u, int cost[MAX_VERTICES][MAX_VERTICES], double dist[MAX_
                 u = i;
             }
         }
-         S[u] = true;
+        S[u] = true;
         for (w = 0; w < n; w++)
         {
             if (!S[w] && dist[w] > dist[u] +
@@ -144,31 +144,32 @@ int main()
             }
             printf("Enter number of edges: ");
             scanf("%d", &m);
-printf("Enter the edges (u v w) where u and v are vertices and w is the cost:\n");
-for (i = 0; i < m; i++) {
+            printf("Enter the edges (u v w) where u and v are vertices and w is the cost:\n");
+            for (i = 0; i < m; i++)
+            {
                 scanf("%d %d %d", &u, &v, &w);
                 cost[u - 1][v - 1] = w;
-}
-break;
-case 2:
-printf("Enter source vertex: ");
-scanf("%d", &u);
-u--;
-int min;
-clock_t start, end;
-start = clock();
-ShortestPaths(u, cost, dist, n,pred);
-end = clock();
-double time_taken = (end - start) +
-(end - start) / 1e9;
-print(0, pred, dist, n);
-printf("\nTime taken: %.9f s\n",
-time_taken);
-break;
-case 3:
-break;
-default:
-printf("Invalid choice. Please try again.\n");
+            }
+            break;
+        case 2:
+            printf("Enter source vertex: ");
+            scanf("%d", &u);
+            u--;
+            int min;
+            clock_t start, end;
+            start = clock();
+            ShortestPaths(u, cost, dist, n, pred);
+            end = clock();
+            double time_taken = (end - start) +
+                                (end - start) / 1e9;
+            print(0, pred, dist, n);
+            printf("\nTime taken: %.9f s\n",
+                   time_taken);
+            break;
+        case 3:
+            break;
+        default:
+            printf("Invalid choice. Please try again.\n");
         }
     } while (choice != 3);
     return 0;

@@ -1,8 +1,4 @@
 section .data
-   
-    
-
-    
     msg1 db 'Enter the first number: '
     msg1len equ $-msg1
     msg2 db 'Enter the second number: '
