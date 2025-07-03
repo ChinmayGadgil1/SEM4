@@ -51,7 +51,6 @@ int select(){
             break;
         }
     }
-    
     int min=firstFalseIndex;
     for (int i = 1; i <=n; i++)
     {

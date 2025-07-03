@@ -69,9 +69,9 @@ int selectVertex(int c[MAX][MAX], int j, int cost[MAX], int n) {
 
 
 void FGraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
-    int cost[MAX];
+    int cost[MAX],stage[n];
     int d[MAX] = {0};
-    
+    stage[1]=1; stage[n]=k;
    
     for (int i = 1; i <= n; i++) {
         cost[i] = inf;
@@ -88,14 +88,10 @@ void FGraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
             d[j] = j;
         }
         
-        int stage = 0;
-        if (j >= 10) stage = 4;
-        else if (j >= 6) stage = 3;
-        else if (j >= 2) stage = 2;
-        else stage = 1;
+        stage[j]=stage[r]-1;        
         
-        printf("Cost(%02d,%02d)=%02d  ", stage, j, cost[j]);
-        printf("r(%02d,%02d)=%02d\n", stage, j, d[j]);
+        printf("Cost(%02d,%02d)=%02d  ", stage[j], j, cost[j]);
+        printf("r(%02d,%02d)=%02d\n", stage[j], j, d[j]);
     }
     
     p[1] = 1;
@@ -129,22 +125,16 @@ int selectVertexB(int c[MAX][MAX], int j, int bcost[MAX], int n) {
 }
 
 void Bgraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
-    int bcost[MAX];
+    int bcost[MAX],stage[n];
     int d[MAX];
-    
+    stage[1]=1;stage[n]=k;
     for (int i = 0; i <= n; i++) {
         bcost[i] = inf;
         d[i] = 0;
     }
     bcost[1] = 0; 
 
-    for (int j = 2; j <= n; j++) {
-        int stage = 0;
-        if (j <= 4) stage = 1;
-        else if (j <= 8) stage = 2;
-        else if (j <= 12) stage = 3;
-        else stage = 4;
-        
+    for (int j = 2; j <= n; j++) {        
         int r = selectVertexB(c, j, bcost, n);
         if (r > 0) {
             bcost[j] = c[r][j] + bcost[r];
@@ -153,9 +143,9 @@ void Bgraph(int c[MAX][MAX], int k, int n, int p[MAX]) {
             bcost[j] = inf;
             d[j] = 0;
         }
-        
-        printf("Cost(%02d,%02d)=%02d  ", stage, j, bcost[j]);
-        printf("r(%02d,%02d)=%02d\n", stage, j, d[j]);
+        stage[j]=stage[r]+1;   
+        printf("Cost(%02d,%02d)=%02d  ", stage[j], j, bcost[j]);
+        printf("r(%02d,%02d)=%02d\n", stage[j], j, d[j]);
     }
     
     p[1] = 1;      
