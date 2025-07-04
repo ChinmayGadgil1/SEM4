@@ -31,14 +31,14 @@ void TraceBack(double p[], double w[], struct Pair pair[], int x[], int to, int 
         int flag = 0;
         for (int j = b[i]; j < b[i + 1]; j++) {
             if (pair[j].p == totalProfit) {
-                x[i] = 0;
+                x[i+1] = 0;
                 flag = 1;
             }
         }
         if (flag == 0) {
             totalProfit = totalProfit - p[i + 1];
             weight = weight - w[i + 1];
-            x[i] = 1;
+            x[i+1] = 1;
         }
     }
 }
@@ -114,7 +114,7 @@ int main() {
     AlgorithmDKnap(p, w, x, n, to);
     
     printf("Solution vector: ");
-    for (int i = 0; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         printf("%d ", x[i]);
     }
     printf("\n");

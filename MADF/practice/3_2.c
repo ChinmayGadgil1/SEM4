@@ -5,6 +5,9 @@
 
 int cost[MAX][MAX];
 int n;
+int dist[MAX][MAX];
+int p[MAX]={0};
+
 
 void create(){
     int max_edges,org,dest,weight;
@@ -36,11 +39,45 @@ void create(){
     
 }
 
+int bellmanFord(int v){
+    for(int i=1;i<=n;i++){
+        dist[1][i]=cost[v][i];
+        p[i]=v;
+    }
+    for(int k=2;k<n;k++){
+        for(int x=1;x<=n;x++){
+            dist[k][x]=dist[k-1][x];
+        }
+        for(int u=1;u<=n;u++){
+            if(u==v) continue;
+            for(int i=1;i<=n;i++){
+                if(dist[k][u]>dist[k-1][i]+cost[i][u]){
+                    dist[k][u]=dist[k-1][i]+cost[i][u];
+                    p[u]=i;
+                }
+            }
+        }
+    }
+}
 
+void printPath(int v,int i){
+    if(v==i){
+        printf("%d",v);
+        return;
+    }
+    printPath(v,p[i]);
+    printf("->%d",i);
+}
 
 int main(){
+int v=1;
+create();
+bellmanFord(v);
 
-
+for(int i=1;i<=n;i++){
+    printPath(v,i);
+    printf("\n");
+}
 
 return 0;
 }

@@ -105,7 +105,6 @@ void BKnap(int k,float cp,float cw){
                 arr[j].x=arr[j].y;
             }
         }
-
     }
 
     if(Bound(cp,cw,k)>=fp){
