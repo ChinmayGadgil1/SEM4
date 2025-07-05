@@ -79,22 +79,47 @@ write_result:
     ret
 
 int_to_ascii:
-    mov edi, result_str + 10
-    mov byte [edi], 0
-    dec edi
-    mov ebx, 10
-convert_loop:
-    xor edx, edx
-    div ebx
-    add dl, '0'
-    mov [edi], dl
-    dec edi
+    ; Handle special case for 0
     test eax, eax
-    jnz convert_loop
-    inc edi
-    mov ecx, edi
-    mov edx, result_str + 10
-    sub edx, ecx
+    jnz .not_zero
+    
+    ; If the value is 0, just output "0"
+    mov byte [result_str], '0'
+    mov ecx, result_str
+    mov edx, 1
+    ret
+
+.not_zero:
+    ; Initialize: Point to the end of the buffer for reverse writing
+    mov edi, result_str
+    xor ecx, ecx          ; Counter for number of digits
+    mov ebx, 10           ; Divisor for conversion
+
+.convert_loop:
+    ; Extract digits one by one
+    xor edx, edx          ; Clear EDX for division
+    div ebx               ; Divide EAX by 10, remainder in EDX
+    add dl, '0'           ; Convert remainder to ASCII
+    
+    ; Store digit and update counter
+    push edx              ; Save the digit
+    inc ecx               ; Increment digit counter
+    
+    ; Continue until no digits left
+    test eax, eax
+    jnz .convert_loop
+    
+    ; Now ECX contains the number of digits
+    mov edx, ecx          ; Save length for return
+
+.write_loop:
+    ; Write digits in correct order
+    pop eax               ; Get digit (in reverse order)
+    mov [edi], al         ; Store in buffer
+    inc edi               ; Move to next position
+    loop .write_loop      ; Repeat for all digits
+    
+    mov ecx, result_str   ; Point to beginning of result
     ret
 
 section .data
